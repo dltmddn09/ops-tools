@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>판매량 확인 툴</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1a1a1a;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 2rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e8e6e0;
+  }
+  .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  input[type="date"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #e0ddd6;
+    border-radius: 8px;
+    background: #fafaf8;
+    color: #1a1a1a;
+    outline: none;
+    font-family: inherit;
+  }
+  input[type="date"]:focus {
+    border-color: #b0a890;
+    background: #fff;
+  }
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    border: 1px solid #e0ddd6;
+    border-radius: 8px;
+    background: #fafaf8;
+    color: #1a1a1a;
+    resize: vertical;
+    outline: none;
+    line-height: 1.5;
+  }
+  textarea:focus {
+    border-color: #b0a890;
+    background: #fff;
+  }
+  textarea::placeholder {
+    color: #bbb;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+    font-size: 13px;
+  }
+  .hint {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+  }
+  .btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+  .btn:hover { background: #333; }
+  .btn:active { background: #000; }
+  .error {
+    font-size: 13px;
+    color: #c0392b;
+    margin-top: 10px;
+    display: none;
+  }
+  .results {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1.5rem;
+  }
+  .result-card {
+    background: #fff;
+    border: 1px solid #e8e6e0;
+    border-radius: 14px;
+    padding: 1.25rem;
+  }
+  .result-card .r-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .result-card .r-date {
+    font-size: 12px;
+    color: #bbb;
+    margin-bottom: 16px;
+  }
+  .r-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0ede8;
+  }
+  .r-row:last-of-type { border-bottom: none; }
+  .r-pkg {
+    font-size: 14px;
+    color: #555;
+  }
+  .r-count {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .r-total {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e8e6e0;
+    text-align: right;
+    font-size: 13px;
+    color: #888;
+  }
+  .r-total span {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>판매량 확인 툴</h1>
+  <p class="subtitle">C열(패키지명) · F열(판매일시) 기준으로 자동 집계합니다</p>
+
+  <div class="card">
+    <p class="label">조회 기준일 (오늘 날짜)</p>
+    <input type="date" id="refDate" />
+  </div>
+
+  <div class="card">
+    <p class="label">엑셀 데이터 붙여넣기</p>
+    <textarea id="pasteArea" placeholder="엑셀에서 전체 선택(Ctrl+A) 후 복사(Ctrl+C)하여 여기에 붙여넣기(Ctrl+V)"></textarea>
+    <p class="hint">헤더 행 포함해도 자동으로 제외됩니다 · 데이터는 탭으로 구분된 형식이면 됩니다</p>
+  </div>
+
+  <button class="btn" onclick="run()">판매량 추출하기</button>
+  <p class="error" id="errMsg"></p>
+
+  <div class="results" id="results">
+    <div class="result-card">
+      <p class="r-title">전날 판매량</p>
+      <p class="r-date" id="prevDateLabel"></p>
+      <div class="r-row"><span class="r-pkg">스탠다드</span><span class="r-count" id="prevStd">0</span></div>
+      <div class="r-row"><span class="r-pkg">디럭스</span><span class="r-count" id="prevDlx">0</span></div>
+      <div class="r-total">합계 <span id="prevTotal">0</span>건</div>
+    </div>
+    <div class="result-card">
+      <p class="r-title">당일 오후 3시(KST) 기준</p>
+      <p class="r-date" id="todayDateLabel"></p>
+      <div class="r-row"><span class="r-pkg">스탠다드</span><span class="r-count" id="todayStd">0</span></div>
+      <div class="r-row"><span class="r-pkg">디럭스</span><span class="r-count" id="todayDlx">0</span></div>
+      <div class="r-total">합계 <span id="todayTotal">0</span>건</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dateInput = document.getElementById('refDate');
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+  function run() {
+    const errEl = document.getElementById('errMsg');
+    errEl.style.display = 'none';
+    errEl.textContent = '';
+    document.getElementById('results').style.display = 'none';
+
+    const raw = document.getElementById('pasteArea').value.trim();
+    if (!raw) { errEl.textContent = '데이터를 붙여넣어 주세요.'; errEl.style.display = 'block'; return; }
+
+    const refDateVal = dateInput.value;
+    if (!refDateVal) { errEl.textContent = '기준일을 입력해 주세요.'; errEl.style.display = 'block'; return; }
+
+    const refDate = new Date(refDateVal);
+    const prevDate = new Date(refDate);
+    prevDate.setDate(prevDate.getDate() - 1);
+
+    const prevStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}-${String(prevDate.getDate()).padStart(2,'0')}`;
+    const todayStr = refDateVal;
+
+    const rows = raw.split('\n').map(r => r.split('\t'));
+
+    let prevStd = 0, prevDlx = 0, todayStd = 0, todayDlx = 0;
+    let parsed = 0;
+
+    for (const row of rows) {
+      if (row.length < 6) continue;
+      const pkg = (row[2] || '').trim();
+      const dateRaw = (row[5] || '').trim();
+      if (!pkg || !dateRaw) continue;
+      const isStd = pkg.includes('标准版');
+      const isDlx = pkg.includes('豪华版');
+      if (!isStd && !isDlx) continue;
+
+      const cleanDate = dateRaw.replace(/^\+/, '');
+      const datePart = cleanDate.substring(0, 10);
+      const timePart = cleanDate.substring(11, 19) || '00:00:00';
+      const [h, mi, s] = timePart.split(':').map(Number);
+      const totalSec = h * 3600 + (mi || 0) * 60 + (s || 0);
+      parsed++;
+
+      if (datePart === prevStr) {
+        if (isStd) prevStd++;
+        if (isDlx) prevDlx++;
+      }
+      if (datePart === todayStr && totalSec < 14 * 3600) {
+        if (isStd) todayStd++;
+        if (isDlx) todayDlx++;
+      }
+    }
+
+    if (parsed === 0) {
+      errEl.textContent = '유효한 데이터를 찾지 못했습니다. C열(패키지명)에 "标准版" 또는 "豪华版"이 포함되어 있는지, F열(날짜)이 올바른 형식인지 확인해 주세요.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('prevDateLabel').textContent = prevStr;
+    document.getElementById('prevStd').textContent = prevStd;
+    document.getElementById('prevDlx').textContent = prevDlx;
+    document.getElementById('prevTotal').textContent = prevStd + prevDlx;
+
+    document.getElementById('todayDateLabel').textContent = `${todayStr}  00:00 ~ 13:59 (CST)`;
+    document.getElementById('todayStd').textContent = todayStd;
+    document.getElementById('todayDlx').textContent = todayDlx;
+    document.getElementById('todayTotal').textContent = todayStd + todayDlx;
+
+    document.getElementById('results').style.display = 'grid';
+  }
+</script>
+</body>
+</html>
