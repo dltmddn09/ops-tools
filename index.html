@@ -797,8 +797,9 @@ function runSteamConvert(raw) {
       const nextMainHasSub = nextSym === '◆' && (nextNextSym === '◇' || nextNextSym === '-' || nextNextSym === '>');
 
       if (nextIsSub) {
-        if (prevIsMain) {
+        if (prevIsMain || prevIsSubEnd) {
           // 이미 그룹 [list] 안에 있으므로 새 [list] 불필요
+          // (prevIsSubEnd: 직전 ◆의 하위 목록이 방금 끝난 경우도 동일한 공유 리스트 안에 있음)
           result.push(`[*][p]${content}[/p]`);
         } else {
           result.push(`[list][*][p]${content}[/p]`);
@@ -848,7 +849,8 @@ function runSteamConvert(raw) {
         } else if (nextIsSub) {
           result.push(`[list][*][p]${content}[/p][/*]`);
         } else if (nextMainIsIndependent) {
-          result.push(`[list][*][p]${content}[/p][/*][/list][/*][/list]`);
+          // 다음 ◆가 독립 그룹을 가지더라도 같은 공유 [list]의 형제이므로 [list]는 유지
+          result.push(`[list][*][p]${content}[/p][/*][/list][/*]`);
         } else if (nextSym === '◆') {
           // 다음 ◆가 그룹 계속 → 외부 [list] 유지
           result.push(`[list][*][p]${content}[/p][/*][/list][/*]`);
@@ -862,7 +864,8 @@ function runSteamConvert(raw) {
         } else if (nextIsSub) {
           result.push(`[*][p]${content}[/p][/*]`);
         } else if (nextMainIsIndependent) {
-          result.push(`[*][p]${content}[/p][/*][/list][/*][/list]`);
+          // 다음 ◆가 독립 그룹을 가지더라도 같은 공유 [list]의 형제이므로 [list]는 유지
+          result.push(`[*][p]${content}[/p][/*][/list][/*]`);
         } else if (nextSym === '◆') {
           result.push(`[*][p]${content}[/p][/*][/list][/*]`);
         } else {
