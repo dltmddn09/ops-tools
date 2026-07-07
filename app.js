@@ -928,8 +928,29 @@ if (typeof document !== "undefined") (function () {
     }
   })();
 
-  /* ── 셀프테스트 (?selftest=1) ── */
+  /* ── 셀프테스트 (?selftest=1) — 고정 픽스처 기준, 라이브 데이터와 무관 ── */
   if (location.search.includes("selftest")) {
+    const fixture = {
+      startDate: "2026-05-11", endDate: "2026-06-15",
+      lanes: [{ id: "mainline", name: "MAINLINE" }, { id: "beta", name: "BETA" }, { id: "alpha", name: "ALPHA" }],
+      patchLaneId: "alpha",
+      initialVersions: { mainline: "1.08.00", beta: "1.08.00", alpha: "1.07.00" },
+      branches: [
+        { date: "2026-05-11", time: "22:00", from: "mainline", to: "beta", version: "1.08.00", sourceNext: "1.10.00" },
+        { date: "2026-05-19", time: "22:00", from: "beta", to: "alpha", version: "1.08.00" },
+        { date: "2026-05-26", time: "11:30", from: "mainline", to: "beta", version: "1.10.00", sourceNext: "1.12.00" },
+        { date: "2026-06-01", time: "22:30", from: "beta", to: "alpha", version: "1.10.00" },
+        { date: "2026-06-14", time: "16:00", from: "mainline", to: "beta", version: "1.12.00", sourceNext: "1.14.00" },
+      ],
+      patches: [
+        { date: "2026-05-15", version: "1.07.00", type: "patch", mode: "regular" },
+        { date: "2026-05-22", version: "1.08.00", type: "patch", mode: "regular" },
+        { date: "2026-05-29", version: "1.09.00", type: "patch", mode: "solo" },
+        { date: "2026-06-05", version: "1.10.00", type: "patch", mode: "regular" },
+        { date: "2026-06-06", version: "1.10.01", type: "hotfix" },
+        { date: "2026-06-12", version: "1.11.00", type: "patch", mode: "solo" },
+      ],
+    };
     const expected = {
       mainline: [["2026-05-11", "2026-05-11", "1.08.00"], ["2026-05-12", "2026-05-26", "1.10.00"],
                  ["2026-05-27", "2026-06-14", "1.12.00"], ["2026-06-15", "2026-06-15", "1.14.00"]],
@@ -939,7 +960,7 @@ if (typeof document !== "undefined") (function () {
                  ["2026-05-23", "2026-05-31", "1.09.00"], ["2026-06-01", "2026-06-05", "1.10.00"],
                  ["2026-06-06", "2026-06-06", "1.10.01"], ["2026-06-07", "2026-06-15", "1.11.00"]],
     };
-    const { segments, warnings } = deriveSegments(window.TIMELINE_DATA);
+    const { segments, warnings } = deriveSegments(fixture);
     const lines = [];
     let pass = true;
     for (const lane of Object.keys(expected)) {
