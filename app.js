@@ -43,6 +43,51 @@ function bumpHotfix(v) { // "1.10.00" → "1.10.01"
   return `${m[1]}.${m[2]}.${String(Number(m[3]) + 1).padStart(2, "0")}`;
 }
 
+/* 브랜치 이벤트의 버전에 맞춰, 보낸 레인의 그 시점 버전을 정하던 설정을 소급 보정.
+ * 예: 6/14 브랜치(sourceNext 1.14.00) 이후 6/26에 1.13.00을 브랜치하면
+ *     MAINLINE이 6/26에 1.13.00이어야 하므로 6/14의 sourceNext를 1.13.00으로 고침. */
+function syncSourceVersion(data, ev) {
+  const X = ev.from, D = ev.date, V = ev.version;
+  if (!V) return;
+  let best = null; // X의 D 시점 버전을 정한 설정자 {kind, ref, eff}
+  for (const b of data.branches) {
+    if (b === ev) continue;
+    if (b.from === X && b.sourceNext) {
+      const eff = addDays(b.date, 1);
+      if (eff <= D && (!best || eff > best.eff)) best = { kind: "next", ref: b, eff };
+    }
+    if (b.to === X && b.date <= D && (!best || b.date > best.eff)) {
+      best = { kind: "recv", ref: b, eff: b.date };
+    }
+  }
+  if (!best) {
+    data.initialVersions = data.initialVersions || {};
+    data.initialVersions[X] = V;
+    return;
+  }
+  if (best.kind === "next") {
+    best.ref.sourceNext = V;
+  } else if (best.ref.version !== V) {
+    best.ref.version = V;
+    syncSourceVersion(data, best.ref); // 위 레인으로 연쇄 보정
+  }
+}
+
+/* 버전 이름 전역 변경 — 버전은 빌드의 정체성이므로 모든 이벤트/색에서 함께 바뀜 */
+function renameVersion(data, oldV, newV) {
+  if (!oldV || !newV || oldV === newV) return;
+  data.branches.forEach(b => {
+    if (b.version === oldV) b.version = newV;
+    if (b.sourceNext === oldV) b.sourceNext = newV;
+  });
+  data.patches.forEach(p => { if (p.version === oldV) p.version = newV; });
+  const iv = data.initialVersions || {};
+  Object.keys(iv).forEach(k => { if (iv[k] === oldV) iv[k] = newV; });
+  const vc = data.versionColors || {};
+  if (vc[oldV] && !vc[newV]) vc[newV] = vc[oldV];
+  delete vc[oldV];
+}
+
 /* ── 규칙 엔진: 이벤트 → 레인별 버전 구간 ── */
 function sortPatches(patches) {
   return [...patches].sort((a, b) =>
@@ -108,6 +153,15 @@ function deriveSegments(data) {
     }
     if (curVer) segs.push({ start: curStart, end: data.endDate, ver: curVer });
     segments[id] = segs;
+  }
+
+  // 브랜치 버전과 보낸 레인의 실제 버전이 다르면 경고 (있어선 안 되는 상태)
+  const nameOf = id => { const l = data.lanes.find(l => l.id === id); return l ? l.name : id; };
+  for (const b of data.branches) {
+    const seg = (segments[b.from] || []).find(s => s.start <= b.date && b.date <= s.end);
+    if (seg && b.version && seg.ver !== b.version) {
+      warnings.push(`${md(b.date)} 브랜치 버전 불일치: ${nameOf(b.from)}이(가) ${seg.ver}인데 ${b.version}을(를) 브랜치함 — 해당 구간을 클릭해 버전을 맞춰주세요`);
+    }
   }
   return { segments, warnings };
 }
@@ -178,7 +232,7 @@ function resolveColors(data, versions) {
 
 /* ═══════════════ 이하 브라우저 전용 ═══════════════ */
 if (typeof module !== "undefined") {
-  module.exports = { deriveSegments, resolveColors, versionsInUse, addDays, sortPatches, bumpMinor, bumpHotfix };
+  module.exports = { deriveSegments, resolveColors, versionsInUse, addDays, sortPatches, bumpMinor, bumpHotfix, syncSourceVersion, renameVersion };
 }
 if (typeof document !== "undefined") (function () {
 
@@ -197,9 +251,17 @@ if (typeof document !== "undefined") (function () {
     return seg ? seg.ver : "";
   }
 
+  /* 모든 브랜치에 대해 "보낸 레인 버전 = 브랜치 버전" 소급 보정 (과거 데이터 자동 치유) */
+  function healBranchVersions() {
+    [...data.branches]
+      .sort((a, b) => a.date < b.date ? -1 : 1)
+      .forEach(b => syncSourceVersion(data, b));
+  }
+
   /* ── 렌더링 ── */
   function render() {
     closePopover();
+    healBranchVersions();
     const { segments, warnings } = deriveSegments(data);
     const versions = versionsInUse(data, segments);
     const colors = resolveColors(data, versions);
@@ -260,7 +322,11 @@ if (typeof document !== "undefined") (function () {
           const td = cell(seg.ver, "seg");
           td.colSpan = span;
           td.style.background = colors[seg.ver];
-          td.dataset.tip = `${lane.name} · ${seg.ver}\n${md(seg.start)} ~ ${md(seg.end)}`;
+          td.dataset.tip = `${lane.name} · ${seg.ver}\n${md(seg.start)} ~ ${md(seg.end)}\n(편집 모드에서 클릭하여 버전/색 수정)`;
+          td.dataset.segVer = seg.ver;
+          td.dataset.segLane = lane.id;
+          td.dataset.segStart = seg.start;
+          td.dataset.segEnd = seg.end;
           tr.appendChild(td);
           d = addDays(end, 1);
         } else {
@@ -359,7 +425,7 @@ if (typeof document !== "undefined") (function () {
   document.addEventListener("click", e => {
     if (pop.hidden) return;
     if (pop.contains(e.target)) return;
-    if (e.target.closest("td[data-bridge-new],td[data-branch-idx],td[data-patch-idx]")) return;
+    if (e.target.closest("td[data-bridge-new],td[data-branch-idx],td[data-patch-idx],td[data-seg-ver]")) return;
     closePopover();
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape") closePopover(); });
@@ -408,6 +474,7 @@ if (typeof document !== "undefined") (function () {
         const ev = { date, time: time.value, from: upper, to: lower, version: ver.value.trim() };
         if (next.value.trim()) ev.sourceNext = next.value.trim();
         data.branches.push(ev);
+        syncSourceVersion(data, ev); // 보낸 레인이 이 시점에 이 버전이 되도록 소급 보정
         // 이 브랜치가 패치 레인으로 들어가면, 같은 버전의 단독 주차 패치는 정규로 자동 전환
         if (lower === data.patchLaneId) {
           data.patches.forEach(p => { if (p.version === ev.version && p.mode === "solo") p.mode = "regular"; });
@@ -443,6 +510,7 @@ if (typeof document !== "undefined") (function () {
         b.time = time.value;
         b.version = ver.value.trim();
         if (next.value.trim()) b.sourceNext = next.value.trim(); else delete b.sourceNext;
+        syncSourceVersion(data, b);
         touch();
       });
       const del = document.createElement("button"); del.className = "ed-btn danger"; del.textContent = "삭제";
@@ -484,6 +552,44 @@ if (typeof document !== "undefined") (function () {
       const del = document.createElement("button"); del.className = "ed-btn danger"; del.textContent = "삭제";
       del.addEventListener("click", () => { data.patches.splice(idx, 1); touch(); });
       row.append(ok, del);
+      box.appendChild(row);
+    });
+  }
+
+  /* 레인 구간 클릭 → 버전/색 수정 팝오버 */
+  function popSegEdit(td) {
+    const oldVer = td.dataset.segVer;
+    const laneId = td.dataset.segLane;
+    openPopover(td, box => {
+      box.appendChild(pTitle(`${laneName(laneId)} · ${oldVer} · ${md(td.dataset.segStart)} ~ ${md(td.dataset.segEnd)}`));
+      const ver = pIn("text", oldVer, "버전");
+      const col = document.createElement("input");
+      col.type = "color"; col.value = (lastColors || {})[oldVer] || "#CCCCCC";
+      box.appendChild(pField("버전", ver));
+      box.appendChild(pField("색", col));
+      const hint = document.createElement("div");
+      hint.className = "ed-hint";
+      hint.textContent = "버전을 바꾸면 이 버전을 쓰는 모든 이벤트(브랜치/패치)가 함께 바뀝니다.";
+      box.appendChild(hint);
+      const row = document.createElement("div"); row.className = "pop-actions";
+      const ok = document.createElement("button"); ok.className = "ed-btn primary"; ok.textContent = "저장";
+      ok.addEventListener("click", () => {
+        const newVer = ver.value.trim();
+        if (!newVer) { alert("버전을 입력하세요."); return; }
+        renameVersion(data, oldVer, newVer);
+        // 이 구간이 initialVersions에서 온 경우도 함께 갱신
+        const iv = data.initialVersions || {};
+        if (iv[laneId] === oldVer) iv[laneId] = newVer;
+        const before = (lastColors || {})[oldVer];
+        if (col.value.toUpperCase() !== (before || "").toUpperCase()) {
+          data.versionColors = data.versionColors || {};
+          data.versionColors[newVer] = col.value;
+        }
+        touch();
+      });
+      const cancel = document.createElement("button"); cancel.className = "ed-btn"; cancel.textContent = "취소";
+      cancel.addEventListener("click", closePopover);
+      row.append(ok, cancel);
       box.appendChild(row);
     });
   }
@@ -535,6 +641,7 @@ if (typeof document !== "undefined") (function () {
     else if (td.dataset.branchIdx !== undefined) popBridgeEdit(td);
     else if (td.dataset.patchNew !== undefined) { closePopover(); inlinePatchInput(td); }
     else if (td.dataset.patchIdx !== undefined) popPatchEdit(td);
+    else if (td.dataset.segVer !== undefined) popSegEdit(td);
   });
 
   /* ── 편집 패널 ── */
@@ -545,7 +652,8 @@ if (typeof document !== "undefined") (function () {
     el.appendChild(div("ed-hint ed-hint-top",
       "캘린더에서 바로 편집할 수 있습니다 — 레인 사이 빈 칸 클릭 = 브랜치 생성, " +
       "패치 행 빈 칸 클릭 = 패치 입력(“패치”/“핫픽스”라고만 쳐도 버전 자동 인식), " +
-      "기존 셀 클릭 = 수정/삭제."));
+      "레인 구간 클릭 = 버전/색 수정, 기존 셀 클릭 = 수정/삭제. " +
+      "브랜치 버전을 지정하면 보낸 레인의 버전이 자동으로 맞춰집니다."));
 
     if (warnings.length) {
       const w = div("ed-warn");
@@ -606,7 +714,7 @@ if (typeof document !== "undefined") (function () {
         selectEl(data.lanes.map(l => [l.id, l.name]), b.from, v => { b.from = v; }),
         span("→"),
         selectEl(data.lanes.map(l => [l.id, l.name]), b.to, v => { b.to = v; }),
-        inputEl("text", b.version, v => { b.version = v; }, "버전", "w-ver"),
+        inputEl("text", b.version, v => { b.version = v; syncSourceVersion(data, b); }, "버전", "w-ver"),
         inputEl("text", b.sourceNext || "", v => { if (v) b.sourceNext = v; else delete b.sourceNext; }, "보낸 레인 다음 버전", "w-ver"),
         btn("✕", () => { data.branches.splice(data.branches.indexOf(b), 1); touch(); }, "danger"),
       );
@@ -841,6 +949,26 @@ if (typeof document !== "undefined") (function () {
       lines.push(`${lane}: ${ok ? "PASS" : "FAIL"}`);
       if (!ok) lines.push(`  expected ${JSON.stringify(expected[lane])}\n  got      ${JSON.stringify(got)}`);
     }
+    // 소급 보정 시나리오: 6/14 브랜치(sourceNext 1.14.00) 후 6/26에 1.13.00 브랜치
+    const syncData = {
+      lanes: [{ id: "m" }, { id: "b" }, { id: "a" }],
+      initialVersions: { m: "1.12.00" }, patchLaneId: "a", patches: [],
+      branches: [{ date: "2026-06-14", from: "m", to: "b", version: "1.12.00", sourceNext: "1.14.00" }],
+    };
+    const syncEv = { date: "2026-06-26", from: "m", to: "b", version: "1.13.00" };
+    syncData.branches.push(syncEv);
+    syncSourceVersion(syncData, syncEv);
+    // 연쇄 보정: b가 받은 버전을 바꾸면 m의 설정까지 올라가서 고침
+    const chainEv = { date: "2026-06-28", from: "b", to: "a", version: "1.13.50" };
+    syncData.branches.push(chainEv);
+    syncSourceVersion(syncData, chainEv);
+    // 전역 이름 변경
+    const rnData = {
+      branches: [{ date: "2026-06-14", from: "m", to: "b", version: "1.12.00", sourceNext: "1.14.00" }],
+      patches: [{ date: "2026-06-19", version: "1.14.00", type: "patch" }],
+      initialVersions: {}, versionColors: { "1.14.00": "#DCEDC8" },
+    };
+    renameVersion(rnData, "1.14.00", "1.13.00");
     const hfColors = resolveColors(
       { versionColors: { "1.12.00": "#EDE7F6" } },
       ["1.12.00", "1.12.01", "1.12.02"]);
@@ -850,6 +978,11 @@ if (typeof document !== "undefined") (function () {
       ["bumpHotfix2", bumpHotfix("1.10.01"), "1.10.02"],
       ["snapMonday", snapMonday("2026-06-14"), "2026-06-08"],
       ["hotfixColorsDistinct", String(hfColors["1.12.01"] !== hfColors["1.12.02"] && hfColors["1.12.01"] !== hfColors["1.12.00"]), "true"],
+      ["syncChainSourceNext", syncData.branches[0].sourceNext, "1.13.50"],
+      ["syncChainRecvVersion", syncData.branches[1].version, "1.13.50"],
+      ["renameBranchNext", rnData.branches[0].sourceNext, "1.13.00"],
+      ["renamePatch", rnData.patches[0].version, "1.13.00"],
+      ["renameColorMoved", rnData.versionColors["1.13.00"] || "", "#DCEDC8"],
     ];
     for (const [name, got, want] of unit) {
       const ok = got === want;
