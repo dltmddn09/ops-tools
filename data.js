@@ -148,7 +148,7 @@ window.TIMELINE_DATA = {
       "mode": "regular"
     },
     {
-      "date": "2026-07-07",
+      "date": "2026-07-08",
       "version": "1.13.01",
       "type": "hotfix"
     }
