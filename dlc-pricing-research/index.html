@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DLC 가격 책정 가이드라인 — 타게임 사례 분석</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 14px; color: #1a1a1a; background: #f5f6f8; }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  h1 { font-size: 22px; font-weight: 700; color: #1F4E79; margin-bottom: 6px; }
+  h2 { font-size: 16px; font-weight: 700; color: #1F4E79; margin: 36px 0 14px; border-left: 4px solid #2E75B6; padding-left: 10px; }
+  h3 { font-size: 14px; font-weight: 700; color: #2E75B6; margin: 20px 0 10px; }
+  p  { line-height: 1.7; margin-bottom: 10px; color: #333; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 32px; }
+
+  .card { background: #fff; border-radius: 8px; border: 1px solid #dde3eb; padding: 20px 24px; margin-bottom: 20px; }
+
+  /* KPI */
+  .kpi-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 140px; background: #fff; border: 1px solid #dde3eb; border-radius: 8px; padding: 16px 20px; text-align: center; }
+  .kpi .num { font-size: 28px; font-weight: 800; }
+  .kpi .label { font-size: 11px; color: #777; margin-top: 4px; }
+  .kpi.red .num   { color: #c0392b; }
+  .kpi.blue .num  { color: #2E75B6; }
+  .kpi.green .num { color: #27ae60; }
+  .kpi.gray .num  { color: #888; }
+
+  /* 테이블 공통 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #1F4E79; color: #fff; padding: 9px 12px; text-align: center; font-weight: 600; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e8ecf0; text-align: center; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  td.left { text-align: left; }
+
+  /* 등급 뱃지 */
+  .g-premium, .grade-badge.g-premium { background: #fde8e8; color: #c0392b; font-weight: 700; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+  .g-fair,    .grade-badge.g-fair    { background: #ddeeff; color: #1a6fa8; font-weight: 700; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+  .g-value,   .grade-badge.g-value   { background: #e0f5e9; color: #27ae60; font-weight: 700; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+  .g-na,      .grade-badge.g-na      { background: #eee; color: #888; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+
+  /* 가격 권고 테이블 */
+  .rec-table thead .col-fair  { background: #1a6fa8; color: #fff; font-weight: 700; }
+  .rec-table thead .col-rec   { background: #c49a00; color: #fff; font-weight: 700; }
+  .rec-table thead .col-std   { background: #a93226; color: #fff; font-weight: 700; }
+  .rec-table tbody .col-fair  { background: #eaf3fb; color: #1a6fa8; font-weight: 600; }
+  .rec-table tbody .col-rec   { background: #fff8e1; color: #b8860b; font-weight: 700; font-size: 14px; }
+  .rec-table tbody .col-std   { background: #fdecea; color: #a93226; font-weight: 600; }
+  .rec-table .col-ref         { color: #555; font-size: 12px; text-align: left; }
+
+  /* 인사이트 리스트 */
+  .insight-list { list-style: none; padding: 0; }
+  .insight-list li { padding: 10px 0 10px 24px; position: relative; border-bottom: 1px solid #eee; line-height: 1.6; }
+  .insight-list li:last-child { border-bottom: none; }
+  .insight-list li::before { content: "▸"; position: absolute; left: 0; color: #2E75B6; font-weight: 700; }
+
+  /* 포지셔닝 */
+  .pos-grid { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .pos-box { flex: 1; min-width: 180px; border-radius: 8px; padding: 16px; }
+  .pos-box h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .pos-box p  { font-size: 12px; margin: 0; line-height: 1.6; }
+  .pos-fair    { background: #ddeeff; border: 1px solid #a8cfee; }
+  .pos-fair h4 { color: #1a6fa8; }
+  .pos-std     { background: #fff8e1; border: 1px solid #f0d060; }
+  .pos-std h4  { color: #b8860b; }
+  .pos-premium { background: #fdecea; border: 1px solid #f5b7b1; }
+  .pos-premium h4 { color: #a93226; }
+
+  .note { font-size: 12px; color: #888; margin-top: 10px; font-style: italic; }
+  .highlight { background: #fffde7; border-left: 3px solid #f0c040; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 16px 0; font-size: 13px; line-height: 1.7; }
+  .section-divider { border: none; border-top: 2px solid #e0e6ef; margin: 40px 0; }
+
+  /* ── 붉은사막 시뮬레이터 ── */
+  .hltb-card { background: #fff; border-radius: 8px; border: 2px solid #2E75B6; padding: 20px 24px; margin-bottom: 20px; }
+  .hltb-card h3 { color: #1F4E79; margin-bottom: 14px; }
+
+  .calc-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .calc-input-box { flex: 1; min-width: 200px; }
+  .calc-input-box label { display: block; font-size: 12px; color: #555; font-weight: 600; margin-bottom: 6px; }
+  .calc-input-box input {
+    width: 100%; padding: 10px 14px; border: 1px solid #c5cdd8; border-radius: 6px;
+    font-size: 15px; font-family: inherit; color: #1a1a1a;
+  }
+  .calc-input-box input:focus { outline: none; border-color: #2E75B6; box-shadow: 0 0 0 2px #d0e8f8; }
+  .calc-input-box .sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  .price-chips { margin-top: 10px; }
+  .price-chips .chip-label { font-size: 11px; color: #777; font-weight: 600; margin-bottom: 5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    display: inline-block; padding: 3px 8px; background: #f0f4f8;
+    border: 1px solid #c5cdd8; border-radius: 4px; font-size: 11px;
+    cursor: pointer; color: #333; transition: background 0.1s;
+  }
+  .chip:hover { background: #2E75B6; color: #fff; border-color: #2E75B6; }
+  .chip.active { background: #1F4E79; color: #fff; border-color: #1F4E79; font-weight: 700; }
+  .chip-more { display: inline-block; padding: 3px 8px; font-size: 11px; color: #aaa; align-self: center; }
+
+  .calc-btn {
+    display: inline-block; padding: 11px 32px; background: #1F4E79; color: #fff;
+    border: none; border-radius: 6px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin-top: 4px;
+  }
+  .calc-btn:hover { background: #2E75B6; }
+
+  /* 결과 영역 */
+  #calc-result { display: none; margin-top: 20px; }
+
+  .result-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .res-box { flex: 1; min-width: 130px; border-radius: 8px; padding: 14px 16px; text-align: center; border: 1px solid #dde3eb; background: #f7f9fc; }
+  .res-box .r-label { font-size: 11px; color: #777; margin-bottom: 6px; }
+  .res-box .r-val { font-size: 22px; font-weight: 800; color: #1F4E79; }
+  .res-box .r-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+  .price-rec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  .price-rec-table th { background: #1F4E79; color: #fff; padding: 8px 12px; text-align: center; }
+  .price-rec-table td { padding: 9px 12px; border-bottom: 1px solid #e8ecf0; text-align: center; }
+  .price-rec-table .p-fair  { background: #eaf3fb; color: #1a6fa8; font-weight: 600; }
+  .price-rec-table .p-rec   { background: #fff8e1; color: #b8860b; font-weight: 700; font-size: 15px; }
+  .price-rec-table .p-std   { background: #fdecea; color: #a93226; font-weight: 600; }
+
+  #res-price-section { margin-top: 16px; padding-top: 16px; border-top: 1px dashed #ddd; }
+  .grade-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .grade-row .gr-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+
+  /* 비교 테이블 */
+  #comp-table-section { display: none; margin-top: 20px; }
+  .comp-table tr.our-row td { background: #fffde7 !important; font-weight: 700; }
+  .comp-table tr.our-row td:first-child::before { content: "⭐ "; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>DLC 가격 책정 가이드라인</h1>
+  <p class="meta">타게임 사례 분석 기반 | 조사 대상: AAA 타이틀 11개 / DLC 18개 | 기준: Steam 정가 USD · HLTB 플레이타임</p>
+
+  <!-- 1. 조사 목적 -->
+  <div class="card">
+    <p>분석 지표인 <strong>가격비율(DLC 가격 ÷ 본체 가격)</strong>과 <strong>볼륨비율(DLC 플레이타임 ÷ 본체 플레이타임)</strong>을 비교하여 각 DLC의 가성비 등급을 산출하였습니다.</p>
+  </div>
+
+  <!-- 2. 핵심 지표 -->
+  <h2>타게임 DLC 등급 분포</h2>
+  <p style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">메인 기준</p>
+  <div class="kpi-row">
+    <div class="kpi red"><div class="num">83%</div><div class="label">프리미엄 (15 / 18개)</div></div>
+    <div class="kpi blue"><div class="num">17%</div><div class="label">공정 (3 / 18개)</div></div>
+    <div class="kpi green"><div class="num">0%</div><div class="label">가성비 (0 / 18개)</div></div>
+  </div>
+  <p style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">올클 기준</p>
+  <div class="kpi-row">
+    <div class="kpi red"><div class="num">94%</div><div class="label">프리미엄 (17 / 18개)</div></div>
+    <div class="kpi blue"><div class="num">0%</div><div class="label">공정 (0 / 18개)</div></div>
+    <div class="kpi green"><div class="num">6%</div><div class="label">가성비 (1 / 18개)</div></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <colgroup><col style="width:16%"><col style="width:17%"><col style="width:17%"><col style="width:17%"><col style="width:17%"><col style="width:16%"></colgroup>
+      <thead><tr>
+        <th>등급</th><th>기준</th><th>메인 기준 (개)</th><th>메인 비중</th><th>올클 기준 (개)</th><th>올클 비중</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><span class="g-value">가성비</span></td><td>지표 &lt; 0.8</td><td>0</td><td>0%</td><td>1</td><td>6%</td></tr>
+        <tr><td><span class="g-fair">공정</span></td><td>지표 0.8 ~ 1.2</td><td>3</td><td>17%</td><td>0</td><td>0%</td></tr>
+        <tr><td><span class="g-premium">프리미엄</span></td><td>지표 &gt; 1.2</td><td>15</td><td>83%</td><td>17</td><td>94%</td></tr>
+        <tr style="background:#f0f4f8; font-weight:600"><td colspan="2">합계</td><td>18</td><td>100%</td><td>18</td><td>100%</td></tr>
+      </tbody>
+    </table>
+    <p class="note">* 지표 = 가격비율(%) ÷ 볼륨비율(%). 1.0이면 가격과 볼륨이 정확히 비례. &gt;1.0이면 볼륨 대비 가격이 높음.</p>
+  </div>
+
+  <!-- 3. 주요 인사이트 -->
+  <h2>주요 인사이트</h2>
+  <div class="card">
+    <ul class="insight-list">
+      <li><strong>AAA DLC는 구조적으로 프리미엄이 표준.</strong> 유료 DLC 18개 중 메인 기준 15개(83%)가 프리미엄 등급. '볼륨 대비 비싼 DLC'는 업계 관행이며, 소비자도 이를 어느 정도 수용하고 있음.</li>
+      <li><strong>메인 기준 공정은 3개뿐이며, 모두 소비자 만족도가 높은 DLC.</strong> Phantom Liberty(지표 0.98), The Ringed City(1.14), KCD2 Brushes with Death(0.91). 공정 포지셔닝은 차별화 전략이 될 수 있음.</li>
+      <li><strong>같은 $69.99 본체 타이틀의 DLC는 지표 1.4 수준에 수렴.</strong> Starfield Shattered Space(지표 1.39)와 Diablo IV Vessel of Hatred(지표 1.39)가 동일. $69.99 본체 기반 DLC 책정의 사실상 업계 기준점.</li>
+      <li><strong>메인 공정 → 올클 프리미엄 패턴이 반복됨.</strong> 불일치 케이스 4개 중 3개가 이 패턴. 메인 스토리 중심 DLC일수록 올클 기준으로 가성비가 나빠지는 구조.</li>
+      <li><strong>AC Valhalla DLC 군은 지표 3.0~4.8로 극단적 프리미엄.</strong> 시즌패스 분할 판매 구조가 개별 DLC 볼륨을 낮춘 결과. IP 파워 의존도가 높을 때 나타나는 패턴으로, 소비자 인식에 부정적 영향을 줄 수 있음.</li>
+      <li><strong>Iceborne는 사실상 독립 타이틀급 DLC.</strong> 본체보다 비싼 가격(133%)에도 볼륨도 81~85%로 높아 지표 1.56~1.64. DLC가 아닌 확장팩으로 포지셔닝할 때의 참고 사례.</li>
+    </ul>
+  </div>
+
+  <!-- 4. 타이틀별 데이터 요약 -->
+  <h2>타이틀별 데이터 요약</h2>
+  <div class="card">
+    <table>
+      <colgroup>
+        <col style="width:14%"><col style="width:16%"><col style="width:9%"><col style="width:9%"><col style="width:9%">
+        <col style="width:9%"><col style="width:9%"><col style="width:11%"><col style="width:14%">
+      </colgroup>
+      <thead><tr>
+        <th>그룹</th><th>DLC명</th><th>본체가</th><th>DLC가</th>
+        <th>가격<br>비율</th><th>볼륨비율<br>(메인)</th><th>볼륨비율<br>(올클)</th>
+        <th>등급<br>(메인)</th><th>등급<br>(올클)</th>
+      </tr></thead>
+      <tbody>
+        <tr style="background:#f0f4f8"><td colspan="9" style="text-align:left; font-weight:700; color:#1F4E79; padding:6px 12px;">── 본체 $69.99 타이틀</td></tr>
+        <tr><td class="left">Starfield</td><td class="left">Shattered Space</td><td>$69.99</td><td>$29.99</td><td>43%</td><td>31%</td><td>13%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">Diablo IV</td><td class="left">Vessel of Hatred</td><td>$69.99</td><td>$39.99</td><td>57%</td><td>41%</td><td>85%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-value">가성비</span></td></tr>
+        <tr><td class="left">AC Shadows</td><td class="left">Claws of Awaji</td><td>$69.99</td><td>$24.99</td><td>36%</td><td>23%</td><td>14%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr style="background:#f0f4f8"><td colspan="9" style="text-align:left; font-weight:700; color:#555; padding:6px 12px;">── 본체 $59.99 타이틀</td></tr>
+        <tr><td class="left">Cyberpunk 2077</td><td class="left">Phantom Liberty</td><td>$59.99</td><td>$29.99</td><td>50%</td><td>51%</td><td>29%</td><td><span class="g-fair">공정</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">Elden Ring</td><td class="left">Shadow of the Erdtree</td><td>$59.99</td><td>$39.99</td><td>67%</td><td>43%</td><td>38%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">Dark Souls III</td><td class="left">Ashes of Ariandel</td><td>$59.99</td><td>$14.99</td><td>25%</td><td>12%</td><td>6%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">Dark Souls III</td><td class="left">The Ringed City</td><td>$59.99</td><td>$14.99</td><td>25%</td><td>22%</td><td>10%</td><td><span class="g-fair">공정</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">AC Valhalla</td><td class="left">Wrath of the Druids</td><td>$59.99</td><td>$24.99</td><td>42%</td><td>14%</td><td>12%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">AC Valhalla</td><td class="left">The Siege of Paris</td><td>$59.99</td><td>$24.99</td><td>42%</td><td>10%</td><td>9%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">AC Valhalla</td><td class="left">Dawn of Ragnarök</td><td>$59.99</td><td>$39.99</td><td>67%</td><td>16%</td><td>14%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">KCD2</td><td class="left">Brushes with Death</td><td>$59.99</td><td>$5.99</td><td>10%</td><td>11%</td><td>6%</td><td><span class="g-fair">공정</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">KCD2</td><td class="left">Legacy of the Forge</td><td>$59.99</td><td>$13.99</td><td>23%</td><td>15%</td><td>13%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">KCD2</td><td class="left">Mysteria Ecclesiae</td><td>$59.99</td><td>$13.99</td><td>23%</td><td>9%</td><td>5%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr style="background:#f0f4f8"><td colspan="9" style="text-align:left; font-weight:700; color:#555; padding:6px 12px;">── 기타</td></tr>
+        <tr><td class="left">MH World</td><td class="left">Iceborne</td><td>$29.99</td><td>$39.99</td><td>133%</td><td>81%</td><td>85%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">The Witcher 3</td><td class="left">Hearts of Stone</td><td>$39.99</td><td>$9.99</td><td>25%</td><td>19%</td><td>10%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">The Witcher 3</td><td class="left">Blood and Wine</td><td>$39.99</td><td>$19.99</td><td>50%</td><td>29%</td><td>23%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">FF XVI</td><td class="left">Echoes of the Fallen</td><td>$49.99</td><td>$9.99</td><td>20%</td><td>8%</td><td>4%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+        <tr><td class="left">FF XVI</td><td class="left">The Rising Tide</td><td>$49.99</td><td>$19.99</td><td>40%</td><td>10%</td><td>11%</td><td><span class="g-premium">프리미엄</span></td><td><span class="g-premium">프리미엄</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- 5. 붉은사막 DLC 가격 권고 -->
+  <h2>붉은사막 DLC 가격 권고</h2>
+  <p>본체 가격 <strong>$69.99</strong> 기준. DLC 메인 스토리 볼륨이 본체 대비 몇 %인지에 따라 아래 표를 참조.</p>
+
+  <!-- 붉은사막 본체 HLTB 정보 -->
+  <h3><a href="https://howlongtobeat.com/game/94122" target="_blank" style="color:inherit; text-decoration:none; border-bottom:1px dashed #aaa;">붉은사막 본체 HLTB 데이터</a> <span style="font-size:11px; color:#e67e22; font-weight:400;">⚠ 제출수 적음 — 출시 초기 데이터</span></h3>
+  <div class="card">
+    <table>
+      <colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+      <thead><tr><th>구분</th><th>플레이타임</th><th>HLTB 제출수</th><th>신뢰도</th></tr></thead>
+      <tbody>
+        <tr><td><strong>메인 스토리</strong></td><td><strong>64.5h</strong></td><td>30명</td><td><span style="color:#e67e22; font-weight:700;">낮음 ⚠</span></td></tr>
+        <tr><td><strong>완전 클리어 (올클)</strong></td><td><strong>253.4h</strong></td><td>18명</td><td><span style="color:#e67e22; font-weight:700;">낮음 ⚠</span></td></tr>
+      </tbody>
+    </table>
+    <p class="note">* 제출수 50명 이상 시 신뢰도 보통, 100명 이상 시 높음으로 분류. 출시 후 시간이 지나면 수치가 변동될 수 있습니다.</p>
+  </div>
+
+  <!-- DLC 볼륨 시뮬레이터 -->
+  <h3>DLC 볼륨 시뮬레이터</h3>
+  <div class="hltb-card">
+    <p style="margin-bottom:16px; font-size:13px; color:#555;">DLC의 예상 플레이타임을 입력하면 볼륨비율과 권장 가격이 자동으로 계산됩니다.</p>
+
+    <div class="calc-grid" style="margin-bottom:12px;">
+      <div class="calc-input-box">
+        <label style="color:#888;">본체 메인 스토리 시간 (h)</label>
+        <input type="number" id="base-main" value="64.5" min="0" step="0.1" oninput="calculate()">
+      </div>
+      <div class="calc-input-box">
+        <label style="color:#888;">본체 완전 클리어 시간 (h)</label>
+        <input type="number" id="base-comp" value="253.4" min="0" step="0.1" oninput="calculate()">
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <button onclick="resetBase()" style="font-size:11px; padding:3px 10px; background:#f0f4f8; border:1px solid #cdd5e0; border-radius:4px; cursor:pointer; color:#555;">↺ 기본값으로 초기화 (메인 64.5h / 올클 253.4h)</button>
+    </div>
+
+    <div class="calc-grid">
+      <div class="calc-input-box">
+        <label>DLC 메인 스토리 시간 (h)</label>
+        <input type="number" id="dlc-main" placeholder="예: 15" min="0" step="0.5" oninput="calculate()">
+        <div class="sub" id="sub-base-main">본체 메인: 64.5h 기준</div>
+      </div>
+      <div class="calc-input-box">
+        <label>DLC 완전 클리어 시간 (h) — 선택</label>
+        <input type="number" id="dlc-comp" placeholder="예: 30" min="0" step="0.5" oninput="calculate()">
+        <div class="sub" id="sub-base-comp">본체 올클: 253.4h 기준</div>
+      </div>
+      <div class="calc-input-box">
+        <label>검토할 DLC 가격 ($) — 선택</label>
+        <input type="number" id="dlc-price" placeholder="예: 29.99" min="0" step="0.01" oninput="onPriceInput()">
+        <div class="sub">입력 시 지표·등급 계산</div>
+        <div class="price-chips">
+          <div class="chip-label">Steam 표준 가격 단위</div>
+          <div class="chips" id="price-chips">
+            <span class="chip" onclick="setPrice(0.99)">$0.99</span>
+            <span class="chip" onclick="setPrice(1.99)">$1.99</span>
+            <span class="chip" onclick="setPrice(2.99)">$2.99</span>
+            <span class="chip" onclick="setPrice(3.99)">$3.99</span>
+            <span class="chip" onclick="setPrice(4.99)">$4.99</span>
+            <span class="chip" onclick="setPrice(5.99)">$5.99</span>
+            <span class="chip" onclick="setPrice(6.99)">$6.99</span>
+            <span class="chip" onclick="setPrice(7.99)">$7.99</span>
+            <span class="chip" onclick="setPrice(8.99)">$8.99</span>
+            <span class="chip" onclick="setPrice(9.99)">$9.99</span>
+            <span class="chip" onclick="setPrice(10.99)">$10.99</span>
+            <span class="chip" onclick="setPrice(11.99)">$11.99</span>
+            <span class="chip" onclick="setPrice(12.99)">$12.99</span>
+            <span class="chip" onclick="setPrice(13.99)">$13.99</span>
+            <span class="chip" onclick="setPrice(14.99)">$14.99</span>
+            <span class="chip" onclick="setPrice(15.99)">$15.99</span>
+            <span class="chip" onclick="setPrice(16.99)">$16.99</span>
+            <span class="chip" onclick="setPrice(17.99)">$17.99</span>
+            <span class="chip" onclick="setPrice(18.99)">$18.99</span>
+            <span class="chip" onclick="setPrice(19.99)">$19.99</span>
+            <span class="chip" onclick="setPrice(20.99)">$20.99</span>
+            <span class="chip" onclick="setPrice(21.99)">$21.99</span>
+            <span class="chip" onclick="setPrice(22.99)">$22.99</span>
+            <span class="chip" onclick="setPrice(23.99)">$23.99</span>
+            <span class="chip" onclick="setPrice(24.99)">$24.99</span>
+            <span class="chip" onclick="setPrice(25.99)">$25.99</span>
+            <span class="chip" onclick="setPrice(26.99)">$26.99</span>
+            <span class="chip" onclick="setPrice(27.99)">$27.99</span>
+            <span class="chip" onclick="setPrice(28.99)">$28.99</span>
+            <span class="chip" onclick="setPrice(29.99)">$29.99</span>
+            <span class="chip" onclick="setPrice(30.99)">$30.99</span>
+            <span class="chip" onclick="setPrice(31.99)">$31.99</span>
+            <span class="chip" onclick="setPrice(32.99)">$32.99</span>
+            <span class="chip" onclick="setPrice(33.99)">$33.99</span>
+            <span class="chip" onclick="setPrice(34.99)">$34.99</span>
+            <span class="chip" onclick="setPrice(35.99)">$35.99</span>
+            <span class="chip" onclick="setPrice(36.99)">$36.99</span>
+            <span class="chip" onclick="setPrice(37.99)">$37.99</span>
+            <span class="chip" onclick="setPrice(38.99)">$38.99</span>
+            <span class="chip" onclick="setPrice(39.99)">$39.99</span>
+            <span class="chip-more">이상 생략</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결과 영역 -->
+    <div id="calc-result">
+      <div style="border-top: 1px solid #dde3eb; padding-top: 18px;">
+        <h3 style="margin-bottom:12px;">계산 결과</h3>
+
+        <!-- 볼륨비율 표시 -->
+        <div class="result-row">
+          <div class="res-box">
+            <div class="r-label">메인 볼륨비율</div>
+            <div class="r-val" id="res-main-ratio">—</div>
+            <div class="r-sub">DLC메인 ÷ 본체메인(64.5h)</div>
+          </div>
+          <div class="res-box">
+            <div class="r-label">올클 볼륨비율</div>
+            <div class="r-val" id="res-comp-ratio">—</div>
+            <div class="r-sub">DLC올클 ÷ 본체올클(253.4h)</div>
+          </div>
+        </div>
+
+        <!-- 타게임 비교 테이블 -->
+        <div id="comp-table-section">
+          <h3 style="margin: 14px 0 8px;">타게임 DLC 메인/올클 볼륨 비율 비교</h3>
+          <table class="comp-table">
+            <thead><tr>
+              <th style="text-align:left;">타이틀</th>
+              <th>가격비율</th>
+              <th>볼륨비율(메인)</th>
+              <th>볼륨비율(올클)</th>
+              <th>지표(메인)</th>
+              <th>등급(메인)</th>
+              <th>지표(올클)</th>
+              <th>등급(올클)</th>
+            </tr></thead>
+            <tbody id="comp-tbody"></tbody>
+          </table>
+          <p class="note">* 볼륨비율(메인) 오름차순 정렬. ⭐ 행이 붉은사막 DLC 입력값.</p>
+        </div>
+
+        <!-- 권장 가격 -->
+        <h3 style="margin: 14px 0 8px;">포지셔닝별 권장 가격 (메인 볼륨 기준)</h3>
+        <table class="price-rec-table">
+          <thead><tr>
+            <th>포지셔닝</th>
+            <th>지표 범위</th>
+            <th>계산값</th>
+            <th>권장 가격</th>
+          </tr></thead>
+          <tbody>
+            <tr class="p-fair">
+              <td>공정</td><td>1.0 ~ 1.2</td>
+              <td id="res-fair-range">—</td>
+              <td id="res-fair-snap" style="font-size:15px; font-weight:700;">—</td>
+            </tr>
+            <tr class="p-rec">
+              <td>업계 표준 ★</td><td>1.3 ~ 1.5</td>
+              <td id="res-rec-range">—</td>
+              <td id="res-rec-snap" style="font-size:16px; font-weight:800;">—</td>
+            </tr>
+            <tr class="p-std">
+              <td>프리미엄 상한</td><td>2.0</td>
+              <td id="res-premium">—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 가격 입력 시 등급 표시 -->
+        <div id="res-price-section">
+          <h3 style="margin: 14px 0 8px;">입력 가격 기준 분석</h3>
+          <div class="result-row">
+            <div class="res-box">
+              <div class="r-label">가격비율</div>
+              <div class="r-val" id="res-price-ratio">—</div>
+              <div class="r-sub">DLC가 ÷ 본체가($69.99)</div>
+            </div>
+            <div class="res-box">
+              <div class="r-label">지표 (메인)</div>
+              <div class="r-val" id="res-indicator-main">—</div>
+              <div class="r-sub">가격비율 ÷ 메인볼륨비율</div>
+            </div>
+            <div class="res-box">
+              <div class="r-label">지표 (올클)</div>
+              <div class="r-val" id="res-indicator-comp">—</div>
+              <div class="r-sub">가격비율 ÷ 올클볼륨비율</div>
+            </div>
+            <div class="res-box">
+              <div class="r-label">등급 (메인)</div>
+              <div class="r-val" style="font-size:16px; padding-top:4px;"><span id="res-grade-main" class="grade-badge g-na">—</span></div>
+            </div>
+            <div class="res-box">
+              <div class="r-label">등급 (올클)</div>
+              <div class="r-val" style="font-size:16px; padding-top:4px;"><span id="res-grade-comp" class="grade-badge g-na">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <strong>핵심 공식:</strong> 권장 가격 = 본체 가격($69.99) × 볼륨비율(%) × 목표 지표<br>
+    <span style="color:#888; font-size:12px">* 목표 지표: 공정 포지셔닝 1.0~1.2 / 업계 표준 1.3~1.5 / 프리미엄 1.6~2.0</span>
+  </div>
+
+  <!-- 포지셔닝 선택 -->
+  <h3>포지셔닝 전략 선택</h3>
+  <div class="pos-grid">
+    <div class="pos-box pos-fair">
+      <h4>공정 포지셔닝 (지표 1.0~1.2)</h4>
+      <p>볼륨과 가격이 균형. 소비자 신뢰 및 구전 효과 극대화. 장기 IP 이미지에 유리.<br>참고 사례: Phantom Liberty, The Ringed City</p>
+    </div>
+    <div class="pos-box pos-std">
+      <h4>업계 표준 (지표 1.3~1.5)</h4>
+      <p>가장 보편적인 AAA DLC 가격대. 소비자 저항이 낮고 수익성도 확보 가능.<br>참고 사례: Shattered Space, Vessel of Hatred, Shadow of the Erdtree</p>
+    </div>
+    <div class="pos-box pos-premium">
+      <h4>프리미엄 (지표 1.6~2.0+)</h4>
+      <p>강한 IP 또는 독점적 콘텐츠일 때만 권장. 지표 2.0 초과 시 소비자 체감 불만 증가 위험.<br>참고 사례: Blood and Wine(1.72), Iceborne(1.64)</p>
+    </div>
+  </div>
+
+  <!-- 볼륨별 권장 가격 테이블 -->
+  <h3>볼륨별 권장 가격 테이블 (본체 $69.99 기준)</h3>
+  <div class="card">
+    <table class="rec-table">
+      <colgroup>
+        <col style="width:12%"><col style="width:15%">
+        <col style="width:15%"><col style="width:16%"><col style="width:16%">
+        <col style="width:26%">
+      </colgroup>
+      <thead><tr>
+        <th>DLC 볼륨<br>(메인 기준)</th>
+        <th>공정 하한<br>(지표 1.0)</th>
+        <th class="col-fair">공정 상한<br>(지표 1.2)</th>
+        <th class="col-rec">권장가<br>(지표 1.3~1.5)</th>
+        <th class="col-std">프리미엄 상한<br>(지표 2.0)</th>
+        <th>참고 타이틀</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>10%</strong></td><td>$7.0</td><td class="col-fair">$8.4 → <strong>$9.99</strong></td><td class="col-rec">$9.1~$10.5<br><strong>→ $9.99</strong></td><td class="col-std">$14.0 → <strong>$14.99</strong></td><td class="col-ref">Ashes of Ariandel (12%), Echoes of the Fallen (8%)</td></tr>
+        <tr><td><strong>15%</strong></td><td>$10.5</td><td class="col-fair">$12.6 → <strong>$12.99</strong></td><td class="col-rec">$13.6~$15.7<br><strong>→ $14.99</strong></td><td class="col-std">$21.0 → <strong>$19.99</strong></td><td class="col-ref">Legacy of the Forge (15%), Ringed City (22%)</td></tr>
+        <tr><td><strong>20%</strong></td><td>$14.0</td><td class="col-fair">$16.8 → <strong>$16.99</strong></td><td class="col-rec">$18.2~$21.0<br><strong>→ $19.99</strong></td><td class="col-std">$28.0 → <strong>$24.99</strong></td><td class="col-ref">Hearts of Stone (19%), Brushes with Death (11%)</td></tr>
+        <tr><td><strong>30%</strong></td><td>$21.0</td><td class="col-fair">$25.2 → <strong>$24.99</strong></td><td class="col-rec">$27.3~$31.5<br><strong>→ $29.99</strong></td><td class="col-std">$42.0 → <strong>$39.99</strong></td><td class="col-ref">Shattered Space (31%), Blood and Wine (29%)</td></tr>
+        <tr><td><strong>40%</strong></td><td>$28.0</td><td class="col-fair">$33.6 → <strong>$34.99</strong></td><td class="col-rec">$36.4~$42.0<br><strong>→ $39.99</strong></td><td class="col-std">$56.0 → <strong>$49.99</strong></td><td class="col-ref">Vessel of Hatred (41%), Shadow of the Erdtree (43%)</td></tr>
+        <tr><td><strong>50%</strong></td><td>$35.0</td><td class="col-fair">$42.0 → <strong>$39.99</strong></td><td class="col-rec">$45.5~$52.5<br><strong>→ $44.99</strong></td><td class="col-std">$70.0 → <strong>$59.99</strong></td><td class="col-ref">Phantom Liberty (51%), AC Shadows (23%)</td></tr>
+        <tr><td><strong>60%</strong></td><td>$42.0</td><td class="col-fair">$50.4 → <strong>$49.99</strong></td><td class="col-rec">$54.6~$63.0<br><strong>→ $54.99</strong></td><td class="col-std">$84.0 → <strong>$69.99</strong></td><td class="col-ref">Shadow of the Erdtree (67% 가격비율 참고)</td></tr>
+      </tbody>
+    </table>
+    <p class="note">* 권장가는 공정 상한~업계 표준 중간값을 기준으로 실제 DLC 가격 관행($9.99/$14.99/$19.99/$24.99/$29.99/$39.99)에 스냅한 값.</p>
+  </div>
+
+  <div class="highlight">
+    <strong>$69.99 본체 동급 타이틀 참고:</strong><br>
+    Starfield(Shattered Space, 볼륨 31%, <strong>$29.99</strong>)와 Diablo IV(Vessel of Hatred, 볼륨 41%, <strong>$39.99</strong>) 모두 지표 <strong>1.39</strong>로 일치.
+    동일 본체 가격대에서 업계가 수렴한 지표값으로, 붉은사막 DLC 가격 책정의 가장 직접적인 벤치마크.
+  </div>
+
+  <!-- 6. 결론 -->
+  <hr class="section-divider">
+  <h2>결론 및 권고</h2>
+  <div class="card">
+    <ul class="insight-list">
+      <li><strong>DLC 볼륨이 본체 메인 대비 20~30%라면 $19.99~$24.99를 권장합니다.</strong> 업계 표준(지표 1.3~1.5) 범위에 해당하며, 소비자 저항이 낮은 구간입니다.</li>
+      <li><strong>DLC 볼륨이 30~50%라면 $24.99~$39.99를 권장합니다.</strong> Shattered Space($29.99, 볼륨 31%)와 Vessel of Hatred($39.99, 볼륨 41%)가 직접적인 기준점입니다.</li>
+      <li><strong>공정 포지셔닝($19.99 이하, 볼륨 30% 수준)을 선택할 경우</strong> 단기 수익보다 소비자 인식 제고와 장기 IP 가치 관점의 의사결정이 필요합니다. Phantom Liberty가 대표적인 성공 사례.</li>
+      <li><strong>지표 2.0 초과는 피할 것을 권고합니다.</strong> AC Valhalla(지표 3.0~4.8)처럼 분할 판매 구조나 낮은 볼륨으로 지표가 높아지면 소비자 커뮤니티에서 부정적 평가를 받는 사례가 많습니다.</li>
+      <li><strong>메인 기준 등급을 1차 판단 기준으로 사용하되</strong>, 올클 기준도 함께 확인하여 두 기준에서 공정이 나오는 가격대를 설정하면 가장 소비자 친화적 포지셔닝이 됩니다.</li>
+    </ul>
+  </div>
+
+  <p class="note" style="text-align:center; margin-top:40px">본 보고서는 HLTB(HowLongToBeat) 플레이타임 데이터 및 Steam 공식 정가(USD) 기준으로 작성되었습니다. 실제 세일/번들 가격은 반영하지 않았습니다.</p>
+
+</div>
+
+<script>
+function setPrice(val) {
+  document.getElementById('dlc-price').value = val.toFixed(2);
+  document.querySelectorAll('#price-chips .chip').forEach(c =>
+    c.classList.toggle('active', c.textContent === '$' + val.toFixed(2))
+  );
+  calculate();
+}
+
+function onPriceInput() {
+  document.querySelectorAll('#price-chips .chip').forEach(c => c.classList.remove('active'));
+  calculate();
+}
+
+const DEFAULT_BASE_MAIN = 64.5;
+const DEFAULT_BASE_COMP = 253.4;
+const BASE_PRICE = 69.99;
+
+function resetBase() {
+  document.getElementById('base-main').value = DEFAULT_BASE_MAIN;
+  document.getElementById('base-comp').value = DEFAULT_BASE_COMP;
+  calculate();
+}
+const PRICE_POINTS = [4.99, 9.99, 12.99, 14.99, 19.99, 24.99, 29.99, 34.99, 39.99, 44.99, 49.99, 54.99, 59.99];
+
+const COMP_DATA = [
+  { base: 'Cyberpunk 2077',       name: 'Phantom Liberty',     priceRatio: 50,  volMain: 51, volComp: 29, indMain: 0.98, gradeMain: '공정',    indComp: 1.72, gradeComp: '프리미엄' },
+  { base: 'KCD2',                 name: 'Brushes with Death',  priceRatio: 10,  volMain: 11, volComp: 6,  indMain: 0.91, gradeMain: '공정',    indComp: 1.67, gradeComp: '프리미엄' },
+  { base: 'Dark Souls III',       name: 'The Ringed City',     priceRatio: 25,  volMain: 22, volComp: 10, indMain: 1.14, gradeMain: '공정',    indComp: 2.5,  gradeComp: '프리미엄' },
+  { base: 'AC Shadows',           name: 'Claws of Awaji',      priceRatio: 36,  volMain: 23, volComp: 14, indMain: 1.57, gradeMain: '프리미엄', indComp: 2.57, gradeComp: '프리미엄' },
+  { base: 'Starfield',            name: 'Shattered Space',     priceRatio: 43,  volMain: 31, volComp: 13, indMain: 1.39, gradeMain: '프리미엄', indComp: 3.31, gradeComp: '프리미엄' },
+  { base: 'Diablo IV',            name: 'Vessel of Hatred',    priceRatio: 57,  volMain: 41, volComp: 85, indMain: 1.39, gradeMain: '프리미엄', indComp: 0.67, gradeComp: '가성비' },
+  { base: 'Elden Ring',           name: 'Shadow of Erdtree',   priceRatio: 67,  volMain: 43, volComp: 38, indMain: 1.56, gradeMain: '프리미엄', indComp: 1.76, gradeComp: '프리미엄' },
+  { base: 'The Witcher 3',        name: 'Blood and Wine',      priceRatio: 50,  volMain: 29, volComp: 23, indMain: 1.72, gradeMain: '프리미엄', indComp: 2.17, gradeComp: '프리미엄' },
+  { base: 'The Witcher 3',        name: 'Hearts of Stone',     priceRatio: 25,  volMain: 19, volComp: 10, indMain: 1.32, gradeMain: '프리미엄', indComp: 2.5,  gradeComp: '프리미엄' },
+  { base: 'KCD2',                 name: 'Legacy of the Forge', priceRatio: 23,  volMain: 15, volComp: 13, indMain: 1.53, gradeMain: '프리미엄', indComp: 1.77, gradeComp: '프리미엄' },
+  { base: 'AC Valhalla',          name: 'Wrath of Druids',     priceRatio: 42,  volMain: 14, volComp: 12, indMain: 3.0,  gradeMain: '프리미엄', indComp: 3.5,  gradeComp: '프리미엄' },
+  { base: 'MH: World',            name: 'Iceborne',            priceRatio: 133, volMain: 81, volComp: 85, indMain: 1.64, gradeMain: '프리미엄', indComp: 1.56, gradeComp: '프리미엄' },
+];
+
+function snapPrice(raw) {
+  return PRICE_POINTS.reduce((prev, curr) =>
+    Math.abs(curr - raw) < Math.abs(prev - raw) ? curr : prev
+  );
+}
+
+function getGrade(ind) {
+  if (ind === null || isNaN(ind)) return '—';
+  if (ind < 0.8)  return '가성비';
+  if (ind <= 1.2) return '공정';
+  return '프리미엄';
+}
+
+function getGradeClass(grade) {
+  if (grade === '가성비')  return 'g-value';
+  if (grade === '공정')    return 'g-fair';
+  if (grade === '프리미엄') return 'g-premium';
+  return 'g-na';
+}
+
+function calculate() {
+  const BASE_MAIN = parseFloat(document.getElementById('base-main').value) || DEFAULT_BASE_MAIN;
+  const BASE_COMP = parseFloat(document.getElementById('base-comp').value) || DEFAULT_BASE_COMP;
+
+  document.getElementById('sub-base-main').textContent = `본체 메인: ${BASE_MAIN}h 기준`;
+  document.getElementById('sub-base-comp').textContent = `본체 올클: ${BASE_COMP}h 기준`;
+
+  const dlcMain  = parseFloat(document.getElementById('dlc-main').value);
+  const dlcComp  = parseFloat(document.getElementById('dlc-comp').value);
+  const dlcPrice = parseFloat(document.getElementById('dlc-price').value);
+
+  if (isNaN(dlcMain) || dlcMain <= 0) {
+    document.getElementById('calc-result').style.display = 'none';
+    return;
+  }
+
+  const mainRatio = dlcMain / BASE_MAIN * 100;
+  const compRatio = (!isNaN(dlcComp) && dlcComp > 0) ? dlcComp / BASE_COMP * 100 : null;
+
+  const fairLow  = BASE_PRICE * mainRatio / 100 * 1.0;
+  const fairHigh = BASE_PRICE * mainRatio / 100 * 1.2;
+  const recLow   = BASE_PRICE * mainRatio / 100 * 1.3;
+  const recHigh  = BASE_PRICE * mainRatio / 100 * 1.5;
+  const premTop  = BASE_PRICE * mainRatio / 100 * 2.0;
+
+  document.getElementById('calc-result').style.display = 'block';
+  document.getElementById('res-main-ratio').textContent = mainRatio.toFixed(1) + '%';
+  document.getElementById('res-comp-ratio').textContent = compRatio !== null ? compRatio.toFixed(1) + '%' : '—';
+
+  document.getElementById('res-fair-range').textContent = '$' + fairLow.toFixed(1) + ' ~ $' + fairHigh.toFixed(1);
+  document.getElementById('res-fair-snap').textContent  = '→ $' + snapPrice((fairLow + fairHigh) / 2).toFixed(2);
+  document.getElementById('res-rec-range').textContent  = '$' + recLow.toFixed(1) + ' ~ $' + recHigh.toFixed(1);
+  document.getElementById('res-rec-snap').textContent   = '→ $' + snapPrice((recLow + recHigh) / 2).toFixed(2);
+  document.getElementById('res-premium').textContent    = '$' + premTop.toFixed(1) + ' → $' + snapPrice(premTop).toFixed(2);
+
+  let priceRatio = null, indMain = null, indComp = null;
+  let gradeMain = '—', gradeComp = '—';
+
+  if (!isNaN(dlcPrice) && dlcPrice > 0) {
+    priceRatio = dlcPrice / BASE_PRICE * 100;
+    indMain    = priceRatio / mainRatio;
+    gradeMain  = getGrade(indMain);
+    if (compRatio !== null) {
+      indComp   = priceRatio / compRatio;
+      gradeComp = getGrade(indComp);
+    }
+    document.getElementById('res-price-section').style.display = 'block';
+    document.getElementById('res-price-ratio').textContent     = priceRatio.toFixed(1) + '%';
+    document.getElementById('res-indicator-main').textContent  = indMain.toFixed(2);
+    document.getElementById('res-indicator-comp').textContent  = indComp !== null ? indComp.toFixed(2) : '—';
+    const gmEl = document.getElementById('res-grade-main');
+    gmEl.textContent = gradeMain; gmEl.className = 'grade-badge ' + getGradeClass(gradeMain);
+    const gcEl = document.getElementById('res-grade-comp');
+    gcEl.textContent = gradeComp; gcEl.className = 'grade-badge ' + getGradeClass(gradeComp);
+  } else {
+    document.getElementById('res-price-section').style.display = 'none';
+  }
+
+  // 비교 테이블
+  const myEntry = {
+    name: '붉은사막 DLC (입력값)',
+    priceRatio: priceRatio,
+    volMain: mainRatio,
+    volComp: compRatio,
+    indMain: indMain,
+    gradeMain: gradeMain,
+    indComp: indComp,
+    gradeComp: gradeComp,
+    isOurs: true
+  };
+
+  const allData = [...COMP_DATA, myEntry].sort((a, b) => a.volMain - b.volMain);
+  const tbody = document.getElementById('comp-tbody');
+  tbody.innerHTML = '';
+
+  allData.forEach(d => {
+    const tr = document.createElement('tr');
+    if (d.isOurs) tr.className = 'our-row';
+
+    const gradeHtml = d.gradeMain !== '—'
+      ? `<span class="${getGradeClass(d.gradeMain)}">${d.gradeMain}</span>` : '—';
+
+    const gradeCompHtml = (d.gradeComp && d.gradeComp !== '—')
+      ? `<span class="${getGradeClass(d.gradeComp)}">${d.gradeComp}</span>` : '—';
+
+    const titleCell = d.isOurs
+      ? `<td style="text-align:left">${d.name}</td>`
+      : `<td style="text-align:left"><span style="display:block;font-size:10px;color:#888;line-height:1.2">${d.base}</span>${d.name}</td>`;
+
+    tr.innerHTML =
+      titleCell +
+      `<td>${d.priceRatio !== null ? d.priceRatio.toFixed(1) + '%' : '—'}</td>` +
+      `<td>${d.volMain.toFixed(1)}%</td>` +
+      `<td>${d.volComp !== null ? d.volComp.toFixed(1) + '%' : '—'}</td>` +
+      `<td>${d.indMain !== null && !isNaN(d.indMain) ? d.indMain.toFixed(2) : '—'}</td>` +
+      `<td>${gradeHtml}</td>` +
+      `<td>${d.indComp !== null && !isNaN(d.indComp) ? d.indComp.toFixed(2) : '—'}</td>` +
+      `<td>${gradeCompHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('comp-table-section').style.display = 'block';
+}
+</script>
+</body>
+</html>
