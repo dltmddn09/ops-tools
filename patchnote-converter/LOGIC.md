@@ -374,15 +374,19 @@ URL은 공통: `https://pearlabyss.info/crimsondesertreport` (오류 제보)
 
 ## 15. Git 레포 구성
 
-모든 HTML 작업 파일은 `e:\Claude code\` 하나의 폴더에서 통합 관리. GitHub 레포: `dltmddn09/claude-work`.
+패치노트 변환기는 `ops-tools` 서브모듈(GitHub 레포: `dltmddn09/ops-tools`, `main` 브랜치) 소속. `ops-tools`는 상위 레포 `claude-work`(`dltmddn09/claude-work`, `master` 브랜치)의 서브모듈로 포함됨.
 
 | 로컬 경로 | 용도 |
 |---|---|
-| `e:\Claude code\패치노트 변환기\` | 패치노트 변환기 (index.html + LOGIC.md) |
-| `e:\Claude code\헤이박스 계산기\` | 헤이박스 계산기 |
-| `e:\Claude code\런처\` | 런처 |
-| `e:\Claude code\통역\` | 통역 연습 도구 |
+| `e:\Claude code\ops-tools\patchnote-converter\` | 패치노트 변환기 (index.html + LOGIC.md + CLAUDE.md) |
+| `e:\Claude code\ops-tools\build-timeline\` | 빌드 타임라인 |
+| `e:\Claude code\ops-tools\dlc-pricing-research\` | DLC 가격 조사 |
+| `e:\Claude code\헤이박스 계산기\` | 헤이박스 계산기 (ops-tools 서브모듈) |
 
-**이전 구조 (변경됨)**: `d:\HTML 모음\` 하위 폴더에서 각각 독립 레포로 관리하던 방식을 claude-work 단일 레포로 통합 (2026-06-19).
+**이전 구조 변경 이력**:
+- `d:\HTML 모음\` 하위 폴더에서 각각 독립 레포로 관리하던 방식을 claude-work 단일 레포로 통합 (2026-06-19)
+- 헤이박스 계산기/패치노트 변환기/빌드 타임라인/DLC 가격 조사 4개 도구를 `ops-tools` 서브모듈 레포로 재통합 — URL 전부 변경됨
 
-Claude Code 세션은 항상 `e:\Claude code\패치노트 변환기` 또는 `e:\Claude code` 기준으로 실행.
+이 폴더 관련 커밋/푸시는 `ops-tools` 서브모듈 자체에서 이루어지며, 이후 상위 `claude-work` 레포의 서브모듈 포인터도 별도로 갱신·커밋해야 함.
+
+Claude Code 세션은 항상 `e:\Claude code\ops-tools\patchnote-converter` 또는 `e:\Claude code` 기준으로 실행.
