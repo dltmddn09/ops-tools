@@ -79,7 +79,7 @@ window.TIMELINE_DATA = {
       "from": "mainline",
       "to": "beta",
       "version": "1.13.00",
-      "sourceNext": "1.15.00"
+      "sourceNext": "1.16.00"
     },
     {
       "date": "2026-07-01",
@@ -87,6 +87,21 @@ window.TIMELINE_DATA = {
       "from": "beta",
       "to": "alpha",
       "version": "1.13.00"
+    },
+    {
+      "date": "2026-07-23",
+      "time": "16:00",
+      "from": "mainline",
+      "to": "beta",
+      "version": "1.16.00",
+      "sourceNext": "1.17.00"
+    },
+    {
+      "date": "2026-07-28",
+      "time": "22:00",
+      "from": "beta",
+      "to": "alpha",
+      "version": "1.16.00"
     }
   ],
   "patches": [
@@ -151,6 +166,18 @@ window.TIMELINE_DATA = {
       "date": "2026-07-08",
       "version": "1.13.01",
       "type": "hotfix"
+    },
+    {
+      "date": "2026-07-16",
+      "version": "1.14.00",
+      "type": "patch",
+      "mode": "solo"
+    },
+    {
+      "date": "2026-07-24",
+      "version": "1.16.00",
+      "type": "patch",
+      "mode": "regular"
     }
   ],
   "versionColors": {
@@ -166,6 +193,7 @@ window.TIMELINE_DATA = {
     "1.12.01": "#d6c6ee",
     "1.12.02": "#bea2e9",
     "1.13.01": "#afe6ee",
-    "1.15.00": "#B2EBF2"
+    "1.16.00": "#B2EBF2",
+    "1.17.00": "#FFCDD2"
   }
 };
