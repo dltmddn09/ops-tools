@@ -177,7 +177,7 @@ window.TIMELINE_DATA = {
       "date": "2026-07-24",
       "version": "1.15.00",
       "type": "patch",
-      "mode": "regular"
+      "mode": "solo"
     }
   ],
   "versionColors": {
