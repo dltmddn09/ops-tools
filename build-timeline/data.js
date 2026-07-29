@@ -175,7 +175,7 @@ window.TIMELINE_DATA = {
     },
     {
       "date": "2026-07-24",
-      "version": "1.16.00",
+      "version": "1.15.00",
       "type": "patch",
       "mode": "regular"
     }
@@ -194,6 +194,7 @@ window.TIMELINE_DATA = {
     "1.12.02": "#bea2e9",
     "1.13.01": "#afe6ee",
     "1.16.00": "#B2EBF2",
-    "1.17.00": "#FFCDD2"
+    "1.17.00": "#FFCDD2",
+    "1.15.00": "#C5CAE9"
   }
 };
