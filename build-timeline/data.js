@@ -3,7 +3,7 @@
 window.TIMELINE_DATA = {
   "title": "붉은사막 빌드 브랜치 타임라인",
   "startDate": "2026-05-11",
-  "endDate": "2026-08-31",
+  "endDate": "2026-10-31",
   "lanes": [
     {
       "id": "mainline",
@@ -178,6 +178,12 @@ window.TIMELINE_DATA = {
       "version": "1.15.00",
       "type": "patch",
       "mode": "solo"
+    },
+    {
+      "date": "2026-07-31",
+      "version": "1.16.00",
+      "type": "patch",
+      "mode": "regular"
     }
   ],
   "versionColors": {
