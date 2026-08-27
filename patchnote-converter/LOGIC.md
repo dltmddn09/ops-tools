@@ -353,14 +353,17 @@ KR 누락도 동일하게 감지 가능 (단, 레이블이 부호 또는 '내용
 ## 13. 하단 템플릿
 
 ### 웹어드민 (FOOTER_TEMPLATES)
-14개 언어별 HTML 코드. 알려진 문제점 링크 + FAQ/오류제보 버튼 + 마무리 인사.  
+14개 언어별 HTML 코드. 알려진 문제점 링크 + 오류제보 버튼 + 마무리 인사.  
 `cd_tpl_divider`, `cd_tpl_btn_common big parchment` 등 어드민툴 전용 클래스 사용.
 
 ### 스팀 (STEAM_FOOTERS)
-14개 언어별 BBCode. 알려진 문제점 `[url]` + HR + FAQ/오류제보 링크 + 마무리 인사.  
+14개 언어별 BBCode. 알려진 문제점 `[url]` + HR + 오류제보 링크 + 마무리 인사.  
 URL은 공통: `https://crimsondesert.pearlabyss.com/News/Notice/Detail?_boardNo=68` (알려진 문제)  
-URL은 공통: `https://crimsondesert.pearlabyss.com/News/Notice/Detail?_boardNo=63` (FAQ)  
 URL은 공통: `https://pearlabyss.info/crimsondesertreport` (오류 제보)
+
+**하단 버튼은 '오류 제보하기' 1개만 둔다** (2026-08-27 변경). 이전에는 FAQ 공지(`_boardNo=63`)
+버튼이 오류 제보 왼쪽에 함께 들어갔으나, 웹어드민·스팀 양쪽 14개 언어 템플릿 28곳에서 모두 제거했다.
+템플릿을 새로 추가·수정할 때 FAQ 버튼을 되살리지 말 것. `_boardNo=63`이 다시 등장하면 회귀다.
 
 ---
 
