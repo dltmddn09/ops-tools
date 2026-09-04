@@ -558,7 +558,9 @@ function convertSteamMulti(skipCheck) {
       for (let c = 0; c < cols.length; c++) {
         const cell = cols[c];
         const quoteCount = (cell.match(/"/g) || []).length;
-        if (quoteCount % 2 === 1) {
+        // 엑셀은 셀 내 줄바꿈을 복사할 때 셀 전체를 따옴표로 감싸므로, 여는 따옴표는 항상 셀 맨 앞에 온다.
+        // startsWith 조건이 없으면 문장 중간의 직선 따옴표(예: 독일어 „Body-Slam")를 줄바꿈으로 오탐한다.
+        if (cell.startsWith('"') && quoteCount % 2 === 1) {
           inQuote = true;
           quoteColIndex = c;
           const kr = (cols[1] || cols[0] || '').replace(/"/g, '').trim();
@@ -1117,7 +1119,9 @@ function convertMulti(skipCheck) {
       for (let c = 0; c < cols.length; c++) {
         const cell = cols[c];
         const quoteCount = (cell.match(/"/g) || []).length;
-        if (quoteCount % 2 === 1) {
+        // 엑셀은 셀 내 줄바꿈을 복사할 때 셀 전체를 따옴표로 감싸므로, 여는 따옴표는 항상 셀 맨 앞에 온다.
+        // startsWith 조건이 없으면 문장 중간의 직선 따옴표(예: 독일어 „Body-Slam")를 줄바꿈으로 오탐한다.
+        if (cell.startsWith('"') && quoteCount % 2 === 1) {
           inQuote = true;
           quoteColIndex = c;
           const kr = (cols[1] || cols[0] || '').replace(/"/g, '').trim();
