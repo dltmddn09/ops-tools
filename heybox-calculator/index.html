@@ -245,7 +245,9 @@
       const dateRaw = (row[5] || '').trim();
       if (!pkg || !dateRaw) continue;
       const pkgUpper = pkg.toUpperCase();
-      const isDlc = pkgUpper.includes('CHARTING THE UNKNOWN');
+      // DLC 판정 기준 - 프리오더 종료 후 상품명이 바뀌면 이 아래 중문명을 교체할 것
+      const isDlc = pkgUpper.includes('CHARTING THE UNKNOWN')
+                 || pkg.includes('红色沙漠：增强版-预购DLC-未知征途-10月16日解锁');
       const isDlx = !isDlc && (pkg.includes('豪华版') || pkgUpper.includes('DELUXE'));
       const isStd = !isDlc && !isDlx && (pkg.includes('标准版') || pkgUpper.includes('CRIMSON DESERT'));
       if (!isStd && !isDlx && !isDlc) continue;
