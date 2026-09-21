@@ -32,8 +32,17 @@
     padding-bottom: 10px; border-bottom: 2px solid var(--rule-strong);
   }
   h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .head-r { display: flex; align-items: baseline; gap: 18px; }
   .meta { font-size: 12px; color: var(--sub); }
-  .meta a { color: var(--sub); }
+  .head-r { align-items: center; }
+  .langs { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 3px; overflow: hidden; }
+  .lang {
+    background: none; border: none; font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--text); cursor: pointer; padding: 4px 12px; line-height: 1.4;
+  }
+  .lang + .lang { border-left: 1px solid var(--rule-strong); }
+  .lang:hover:not(.on) { background: var(--hover); }
+  .lang.on { background: var(--rule-strong); color: var(--bg); font-weight: 600; }
 
   .search { margin: 22px 0 18px; }
   #q {
@@ -105,6 +114,7 @@
   @media (max-width: 680px) {
     body { padding: 28px 16px 60px; }
     header { flex-direction: column; gap: 2px; }
+    .head-r { width: 100%; justify-content: space-between; }
     .row { grid-template-columns: auto 1fr auto; row-gap: 0; }
     .row .date { grid-column: 1; } .row .cat { grid-column: 2; } .row .src { grid-column: 3; }
     .row .title { grid-column: 1 / -1; order: 5; }
@@ -118,38 +128,63 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>CD 공지 검색</h1>
-    <span class="meta" id="meta"></span>
+    <h1 data-t="title">CD 공지 검색</h1>
+    <div class="head-r">
+      <span class="meta" id="meta"></span>
+      <span class="langs"><button class="lang on" data-lang="ko">한국어</button><button class="lang" data-lang="en">English</button></span>
+    </div>
   </header>
 
   <div class="search">
-    <input id="q" type="search" placeholder="검색어를 입력하세요" autocomplete="off" autofocus>
+    <input id="q" type="search" autocomplete="off" autofocus>
   </div>
 
   <div class="bar">
     <div class="tabs">
-      <button class="tab on" data-cat="">전체<span class="n" data-count=""></span></button>
-      <button class="tab" data-cat="업데이트">업데이트<span class="n" data-count="업데이트"></span></button>
-      <button class="tab" data-cat="공지사항">공지사항<span class="n" data-count="공지사항"></span></button>
+      <button class="tab on" data-cat=""><span data-t="all">전체</span><span class="n" data-count=""></span></button>
+      <button class="tab" data-cat="업데이트"><span data-t="upd">업데이트</span><span class="n" data-count="업데이트"></span></button>
+      <button class="tab" data-cat="공지사항"><span data-t="ntc">공지사항</span><span class="n" data-count="공지사항"></span></button>
     </div>
-    <button class="sort" id="sort">최신순</button>
+    <button class="sort" id="sort"></button>
   </div>
 
   <div class="summary" id="summary"></div>
   <div id="list"></div>
 
-  <footer>
-    출처: <a href="https://crimsondesert.pearlabyss.com/ko-KR/News/Notice" target="_blank">붉은사막 공식 홈페이지 새소식</a> (게시판 목록에 공개된 글만 수집)<br>
-    게시 시간은 한국 시간 기준입니다. 공식 홈페이지에는 UTC로 표기됩니다.
-  </footer>
+  <footer id="foot"></footer>
 </div>
 
 <script src="data.js"></script>
 <script>
 (function () {
   const posts = (window.NOTICE_DATA && window.NOTICE_DATA.posts) || [];
-  const DETAIL = 'https://crimsondesert.pearlabyss.com/ko-KR/News/Notice/Detail?_boardNo=';
+  const SITE = 'https://crimsondesert.pearlabyss.com';
   const MAX_HITS = 8;
+  const LOCALE = { ko: 'ko-KR', en: 'en-US' };
+  const T = {
+    ko: {
+      title: 'CD 공지 검색', all: '전체', upd: '업데이트', ntc: '공지사항',
+      placeholder: '검색어를 입력하세요', desc: '최신순', asc: '오래된순', src: '원문',
+      meta: latest => `매주 월요일 10:30 자동 수집 · 최신 글 ${latest}`,
+      sumAll: n => `${n}개 글`, sumHit: (n, h) => `${n}개 글, ${h}줄`,
+      empty: '일치하는 내용이 없습니다.', noData: '데이터를 불러오지 못했습니다.',
+      more: n => `외 ${n}줄 — 제목을 눌러 전문 보기`, img: '[이미지]',
+      orig: '공식 홈페이지 표기',
+      foot: `출처: <a href="${SITE}/ko-KR/News/Notice" target="_blank">붉은사막 공식 홈페이지 새소식</a> (게시판 목록에 공개된 글만 수집)<br>게시 시간은 한국 시간 기준입니다. 공식 홈페이지에는 UTC로 표기됩니다.`,
+    },
+    en: {
+      title: 'CD Notice Search', all: 'All', upd: 'Updates', ntc: 'Notices',
+      placeholder: 'Search', desc: 'Newest', asc: 'Oldest', src: 'Source',
+      meta: latest => `Collected every Monday 10:30 KST · Latest ${latest}`,
+      sumAll: n => `${n} post${n === 1 ? '' : 's'}`,
+      sumHit: (n, h) => `${n} post${n === 1 ? '' : 's'}, ${h} line${h === 1 ? '' : 's'}`,
+      empty: 'No matches.', noData: 'Failed to load data.',
+      more: n => `${n} more line${n === 1 ? '' : 's'} — click the title for the full post`, img: '[image]',
+      orig: 'Official site',
+      foot: `Source: <a href="${SITE}/en-US/News/Notice" target="_blank">Crimson Desert official site — News</a> (only posts listed on the board)<br>Times are shown in KST (UTC+9). The official site shows UTC.`,
+    },
+  };
+  const CAT_KEY = { '업데이트': 'upd', '공지사항': 'ntc' };
   const pad = n => String(n).padStart(2, '0');
 
   // ---- 전처리: 본문을 줄 단위로 나누고 각 줄의 소제목을 기억
@@ -169,13 +204,24 @@
     p.titleLow = p.title.toLowerCase();
   });
 
-  document.getElementById('meta').textContent = posts.length
-    ? `매주 월요일 10:30 자동 수집 · 최신 글 ${posts.reduce((a, p) => p.kst > a ? p.kst : a, '')}`
-    : '데이터를 불러오지 못했습니다.';
-  document.querySelectorAll('[data-count]').forEach(el => {
-    const c = el.dataset.count;
-    el.textContent = posts.filter(p => !c || p.cat === c).length;
-  });
+  // ---- 언어 전환: 화면 문구 + 글 개수
+  function applyLang() {
+    const t = T[state.lang];
+    const mine = posts.filter(p => p.lang === LOCALE[state.lang]);
+    document.documentElement.lang = state.lang;
+    document.title = t.title;
+    document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t[el.dataset.t]; });
+    document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === state.lang));
+    qEl.placeholder = t.placeholder;
+    document.getElementById('foot').innerHTML = t.foot;
+    document.getElementById('meta').textContent = mine.length
+      ? t.meta(mine.reduce((a, p) => p.kst > a ? p.kst : a, ''))
+      : t.noData;
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const c = el.dataset.count;
+      el.textContent = mine.filter(p => !c || p.cat === c).length;
+    });
+  }
 
   function plain(s) {
     return s.replace(/^#{2,3} /, '').replace(/^\s*(?:-|\d+\.) /, '')
@@ -209,7 +255,7 @@
   // ---- 본문 렌더링 (수집기가 만든 단순 마크다운)
   function inlineMd(s) {
     let h = esc(s);
-    h = h.replace(/!\[\]\(([^)]*)\)/g, '<a href="$1" target="_blank">[이미지]</a>');
+    h = h.replace(/!\[\]\(([^)]*)\)/g, '<a href="$1" target="_blank">' + T[state.lang].img + '</a>');
     h = h.replace(/\[([^\]]*)\]\((https?:[^)]*)\)/g, '<a href="$2" target="_blank">$1</a>');
     h = h.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
     return h;
@@ -248,7 +294,7 @@
   }
 
   // ---- 상태
-  const state = { q: '', cat: '', sort: 'desc' };
+  const state = { q: '', cat: '', sort: 'desc', lang: 'ko' };
   const qEl = document.getElementById('q');
   const listEl = document.getElementById('list');
   const sumEl = document.getElementById('summary');
@@ -259,6 +305,10 @@
     state.q = h.get('q') || '';
     state.cat = h.get('cat') || '';
     state.sort = h.get('sort') === 'asc' ? 'asc' : 'desc';
+    let saved = null;
+    try { saved = localStorage.getItem('notice-search-lang'); } catch (e) {}
+    state.lang = h.get('lang') || saved || 'ko';
+    if (!T[state.lang]) state.lang = 'ko';
     qEl.value = state.q;
     syncControls();
   }
@@ -267,17 +317,19 @@
     if (state.q) h.set('q', state.q);
     if (state.cat) h.set('cat', state.cat);
     if (state.sort === 'asc') h.set('sort', 'asc');
+    if (state.lang !== 'ko') h.set('lang', state.lang);
     const s = h.toString();
     history.replaceState(null, '', s ? '#' + s : location.pathname + location.search);
   }
   function syncControls() {
     document.querySelectorAll('[data-cat]').forEach(c => c.classList.toggle('on', c.dataset.cat === state.cat));
-    sortEl.textContent = state.sort === 'asc' ? '오래된순' : '최신순';
+    sortEl.textContent = T[state.lang][state.sort];
   }
 
   function render() {
     const inc = parse(state.q);
-    const pool = posts.filter(p => !state.cat || p.cat === state.cat)
+    const t = T[state.lang];
+    const pool = posts.filter(p => p.lang === LOCALE[state.lang] && (!state.cat || p.cat === state.cat))
       .sort((a, b) => state.sort === 'asc' ? a.utc.localeCompare(b.utc) : b.utc.localeCompare(a.utc));
 
     const results = [];
@@ -290,10 +342,10 @@
     });
 
     sumEl.textContent = inc.length
-      ? `${results.length}개 글, ${hitCount}줄`
-      : `${results.length}개 글`;
+      ? t.sumHit(results.length, hitCount)
+      : t.sumAll(results.length);
     if (!results.length) {
-      listEl.innerHTML = `<div class="empty">일치하는 내용이 없습니다.</div>`;
+      listEl.innerHTML = `<div class="empty">${t.empty}</div>`;
       return;
     }
 
@@ -302,14 +354,14 @@
         hits.slice(0, MAX_HITS).map(l =>
           `<div class="hit" data-line="${l.i}"><span class="sec" title="${esc(l.sec)}">${esc(l.sec)}</span><span class="line">${highlight(l.text, inc)}</span></div>`
         ).join('') +
-        (hits.length > MAX_HITS ? `<div class="more">외 ${hits.length - MAX_HITS}줄 — 제목을 눌러 전문 보기</div>` : '') +
+        (hits.length > MAX_HITS ? `<div class="more">${t.more(hits.length - MAX_HITS)}</div>` : '') +
         `</div>` : '';
       return `<div class="post" data-idx="${idx}">
         <div class="row">
-          <span class="date" title="공식 홈페이지 표기: ${p.utcLabel}">${p.kst}</span>
-          <span class="cat ${p.cat === '업데이트' ? 'upd' : ''}">${p.cat}</span>
+          <span class="date" title="${t.orig}: ${p.utcLabel}">${p.kst}</span>
+          <span class="cat ${p.cat === '업데이트' ? 'upd' : ''}">${t[CAT_KEY[p.cat]]}</span>
           <span class="title">${highlight(p.title, inc)}</span>
-          <a class="src" href="${DETAIL}${p.no}" target="_blank">원문</a>
+          <a class="src" href="${SITE}/${p.lang}/News/Notice/Detail?_boardNo=${p.no}" target="_blank">${t.src}</a>
         </div>${hitHtml}<div class="body"></div></div>`;
     }).join('');
 
@@ -343,9 +395,15 @@
   sortEl.addEventListener('click', () => {
     state.sort = state.sort === 'asc' ? 'desc' : 'asc'; syncControls(); writeHash(); render();
   });
-  window.addEventListener('hashchange', () => { readHash(); render(); });
+  document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    state.lang = b.dataset.lang;
+    try { localStorage.setItem('notice-search-lang', state.lang); } catch (e) {}
+    syncControls(); applyLang(); writeHash(); render();
+  }));
+  window.addEventListener('hashchange', () => { readHash(); applyLang(); render(); });
 
   readHash();
+  applyLang();
   render();
 })();
 </script>
