@@ -131,7 +131,7 @@
     <h1 data-t="title">CD 공지 검색</h1>
     <div class="head-r">
       <span class="meta" id="meta"></span>
-      <span class="langs"><button class="lang on" data-lang="ko">한국어</button><button class="lang" data-lang="en">English</button></span>
+      <span class="langs"><button class="lang on" data-lang="ko">한국어</button><button class="lang" data-lang="en">English</button><button class="lang" data-lang="zh">简体中文</button></span>
     </div>
   </header>
 
@@ -160,7 +160,7 @@
   const posts = (window.NOTICE_DATA && window.NOTICE_DATA.posts) || [];
   const SITE = 'https://crimsondesert.pearlabyss.com';
   const MAX_HITS = 8;
-  const LOCALE = { ko: 'ko-KR', en: 'en-US' };
+  const LOCALE = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN' };
   const T = {
     ko: {
       title: 'CD 공지 검색', all: '전체', upd: '업데이트', ntc: '공지사항',
@@ -182,6 +182,16 @@
       more: n => `${n} more line${n === 1 ? '' : 's'} — click the title for the full post`, img: '[image]',
       orig: 'Official site',
       foot: `Source: <a href="${SITE}/en-US/News/Notice" target="_blank">Crimson Desert official site — News</a> (only posts listed on the board)<br>Times are shown in KST (UTC+9). The official site shows UTC.`,
+    },
+    zh: {
+      title: 'CD 公告搜索', all: '全部', upd: '更新信息', ntc: '公告',
+      placeholder: '输入搜索词', desc: '最新', asc: '最早', src: '原文',
+      meta: latest => `每周一 10:30 自动收集 · 最新 ${latest}`,
+      sumAll: n => `${n} 篇`, sumHit: (n, h) => `${n} 篇，${h} 行`,
+      empty: '没有匹配的内容。', noData: '数据加载失败。',
+      more: n => `另有 ${n} 行 — 点击标题查看全文`, img: '[图片]',
+      orig: '官网标示',
+      foot: `来源：<a href="${SITE}/zh-CN/News/Notice" target="_blank">红色沙漠官网 新消息</a>（仅收集公告板列表中公开的帖子）<br>发布时间以韩国时间（UTC+9）显示。官网以 UTC 标示。`,
     },
   };
   const CAT_KEY = { '업데이트': 'upd', '공지사항': 'ntc' };
