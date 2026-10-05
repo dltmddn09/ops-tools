@@ -3,6 +3,30 @@ window.NOTICE_DATA = {
 "posts": [
 {
 "lang": "ko-KR",
+"no": 134,
+"cat": "공지사항",
+"title": "붉은사막 Enhanced: 미지의 여정 출시일 안내",
+"utc": "2026-09-30T10:20:00Z",
+"body": "안녕하세요, 회색갈기 여러분. 붉은사막 팀입니다.\n저희 붉은사막 팀은 파이웰 대륙의 새로운 모험을 전달드리기 위해 \"붉은사막 Enhanced : 미지의 여정\" DLC 개발에 매진하고 있습니다.\n그러나, 더 높은 완성도와 안정적인 플레이 경험을 제공하기 위해서 추가적인 개발 시간 확보가 필요하다는 점을 확인하게 되었습니다.\n이에 \"붉은사막 Enhanced : 미지의 여정\" 출시 일정을 당초 계획보다 2주 늦춰진 **10월 30일**로 조정하게 되었습니다.\n출시를 기다려주신 여러분께 일정을 변경하게 된 점 진심으로 사과드립니다.\n추가로 확보된 기간 동안 콘텐츠의 완성도를 높이는 데 집중하여 더욱 만족스러운 경험을 제공할 수 있도록 최선을 다하겠습니다.\n10월 30일, 파이웰에서 다시 뵙겠습니다.\n붉은사막 팀 드림\nTemplate End\n\n### 미지의 여정 지역별 출시 시간\n\n| **유럽** | **북미** | **아시아** |\n| --- | --- | --- |\n| 2026년 10월 29일 (목) 22:00 (UTC) 2026년 10월 29일 (목) 23:00 (CET) | 2026년 10월 29일 (목) 15:00 (PT) 2026년 10월 29일 (목) 18:00 (ET) | 2026년 10월 30일 (금) 7:00 (KST/JST) |"
+},
+{
+"lang": "en-US",
+"no": 134,
+"cat": "공지사항",
+"title": "Charting the Unknown: Release Date Update",
+"utc": "2026-09-30T10:20:00Z",
+"body": "Hello Greymanes,\nWe are hard at work on Crimson Desert Enhanced: Charting the Unknown to bring you new adventures to Pywel.\nHowever, we have determined that we need additional development time to deliver a more polished and stable gameplay experience.\nTherefore, we have decided to move the DLC's release by 2 weeks to **October 29 GMT/PT**.\nWe know many of you have been looking forward to returning to the game and we sincerely apologize for the longer wait.\nWe will use the additional time to further refine the content and do our utmost to deliver the best experience we can.\nWe look forward to seeing you in Pywel on October 29 GMT/PT.\nThe Crimson Desert Team\nTemplate End\n\n### Charting the Unknown Release Times by Region:\n\n| **Europe** | **North America** | **Asia** |\n| --- | --- | --- |\n| October 29th, 2026 (Thu) at 22:00 (UTC) October 29th, 2026 (Thu) at 23:00 (CEST) | October 29th, 2026 (Thu) at 15:00 (PT) October 29th, 2026 (Thu) at 18:00 (ET) | October 30th, 2026 (Fri) at 7:00 (KST/JST) |"
+},
+{
+"lang": "zh-CN",
+"no": 134,
+"cat": "공지사항",
+"title": "未知征途：DLC预购相关说明",
+"utc": "2026-09-30T10:20:00Z",
+"body": "各位灰鬃，大家好。\n为了给大家带来帕卫尔大陆的全新冒险，红色沙漠团队一直在全力推进《红色沙漠：增强版 - 未知征途》DLC的开发。\n但经过评估，要达到更高的完成度并提供更稳定的游戏体验，我们还需要额外的开发时间。\n因此，《未知征途》的发售日期将比原计划推迟两周，调整至**10月30日**。\n我们深知各位灰鬃期待已久，对于让大家再多等一段时间，我们深表歉意。\n接下来我们将利用这段时间继续打磨内容，力求以更好的品质呈现给大家。\n10月30日，期待与各位在帕卫尔重逢。\n《红色沙漠》团队 敬上\nTemplate End\n\n### 未知征途各地区解锁时间\n\n| **欧洲** | **北美** | **亚洲** |\n| --- | --- | --- |\n| 2026年 10月 29日 (星期四) 22:00 (UTC) 2026年 10月 29日 (星期四) 23:00 (CET) | 2026年 10月 29日 (星期四) 15:00 (PT) 2026年 10月 29日 (星期四) 18:00 (ET) | 2026年 10月 30日 (星期五) 7:00 (KST/JST) |"
+},
+{
+"lang": "ko-KR",
 "no": 133,
 "cat": "업데이트",
 "title": "패치 노트 버전 2.03.02 (전 플랫폼 핫픽스)",
@@ -149,25 +173,25 @@ window.NOTICE_DATA = {
 "lang": "ko-KR",
 "no": 129,
 "cat": "공지사항",
-"title": "미지의 여정 DLC 예약 구매 관련 안내",
+"title": "미지의 여정 DLC 예약 구매 관련 안내 (내용 수정 : 2026/30/09)",
 "utc": "2026-09-03T14:00:00Z",
-"body": "### 미지,그 너머로 향하는 새로운 여정이 10월 16일에 시작됩니다!\n\n붉은사막 Enhanced의 신규 DLC 미지의 여정의 예약 구매가 플랫폼별로 순차적으로 오픈될 예정입니다. 9월 3일 오후 3시(UTC) PlayStation Store를 시작으로, 이후 Steam과 Epic Games Store가 오픈되며, Microsoft Store는 오후 9시(UTC)에 오픈됩니다.\n예약 구매 시, 예약 구매 전용 특전으로 클리프와 웅카를 위한 미지 탐험가의 잠수복 세트와 데미안을 위한 미지 탐험가의 경량 잠수복 세트를 받으실 수 있습니다.\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/4127932610320260901072845575.png)\n미지의 여정 DLC에 대한 자세한 정보는 공식 홈페이지에서 확인하실 수 있습니다:\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) 미지의 여정](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### 미지의 여정 지역별 출시 시간\n\n| **유럽** | **북미** | **아시아** |\n| --- | --- | --- |\n| 2026년 10월 15일 (목) 22:00 (UTC) 2026년 10월 16일 (금) 00:00 (CEST) | 2026년 10월 15일 (목) 15:00 (PT) 2026년 10월 15일 (목) 18:00 (ET) | 2026년 10월 16일 (금) 7:00 (KST/JST) |\n\n※ 붉은사막 Enhanced: 미지의 여정은 Mac App Store에서 제공되지 않습니다.\n추후 Mac 플랫폼 출시가 결정될 경우, 별도 공지를 통해 관련 내용을 안내드리겠습니다.\n**[일부 지역 이용 제한 안내]**콘텐츠 및 연령 등급 심의 요건 검토에 따라, 붉은사막: 미지의 여정은 일부 지역에서 판매 및 이용이 제한됩니다.\n해당 지역에서는 예약 구매가 종료되며, 이미 예약 구매하신 경우 이용 중인 플랫폼의 환불 절차를 통해 환불을 요청하실 수 있습니다. 일부 플랫폼의 경우, 플랫폼 정책에 따라 자동으로 환불 처리가 될 수 있습니다.\n이용에 불편을 드려 죄송합니다."
+"body": "### 미지,그 너머로 향하는 새로운 여정이 10월 30일에 시작됩니다!\n\n붉은사막 Enhanced의 신규 DLC 미지의 여정의 예약 구매가 플랫폼별로 순차적으로 오픈될 예정입니다. 9월 3일 오후 3시(UTC) PlayStation Store를 시작으로, 이후 Steam과 Epic Games Store가 오픈되며, Microsoft Store는 오후 9시(UTC)에 오픈됩니다.\n예약 구매 시, 예약 구매 전용 특전으로 클리프와 웅카를 위한 미지 탐험가의 잠수복 세트와 데미안을 위한 미지 탐험가의 경량 잠수복 세트를 받으실 수 있습니다.\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/4127932610320260901072845575.png)\n미지의 여정 DLC에 대한 자세한 정보는 공식 홈페이지에서 확인하실 수 있습니다:\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) 미지의 여정](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### 미지의 여정 지역별 출시 시간 (내용 수정 : 2026/30/09)\n\n| **유럽** | **북미** | **아시아** |\n| --- | --- | --- |\n| 2026년 10월 29일 (목) 22:00 (UTC) 2026년 10월 29일 (목) 23:00 (CET) | 2026년 10월 29일 (목) 15:00 (PT) 2026년 10월 29일 (목) 18:00 (ET) | 2026년 10월 30일 (금) 7:00 (KST/JST) |\n\n※ 붉은사막 Enhanced: 미지의 여정은 Mac App Store에서 제공되지 않습니다.\n추후 Mac 플랫폼 출시가 결정될 경우, 별도 공지를 통해 관련 내용을 안내드리겠습니다.\n**[일부 지역 이용 제한 안내]**콘텐츠 및 연령 등급 심의 요건 검토에 따라, 붉은사막: 미지의 여정은 일부 지역에서 판매 및 이용이 제한됩니다.\n해당 지역에서는 예약 구매가 종료되며, 이미 예약 구매하신 경우 이용 중인 플랫폼의 환불 절차를 통해 환불을 요청하실 수 있습니다. 일부 플랫폼의 경우, 플랫폼 정책에 따라 자동으로 환불 처리가 될 수 있습니다.\n이용에 불편을 드려 죄송합니다."
 },
 {
 "lang": "en-US",
 "no": 129,
 "cat": "공지사항",
-"title": "Charting the Unknown: DLC Pre-Orders Opening Soon",
+"title": "Charting the Unknown: DLC Pre-Orders Opening Soon (Revised: 2026/30/09)",
 "utc": "2026-09-03T14:00:00Z",
-"body": "### A new journey into the unknown begins October 15th, 2026!\n\nPre-orders for Crimson Desert Enhanced's new DLC, \"Charting the Unknown,\" will roll out across console and PC, starting with PlayStation Store at 3:00 PM (UTC) on September 3rd, followed by Steam and Epic Games Store, and Microsoft Store at 9:00 PM (UTC).\nPre-order and receive the Charter's Diving Set for Kliff and Oongka and the Charter's Light Diving Set for Damiane as an exclusive pre-order bonus.\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/fd1ea5343b520260901073434557.png)\nLearn more about Charting the Unknown through the official site:\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) Charting the Unknown](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### Charting the Unknown Release Times by Region:\n\n| **Europe** | **North America** | **Asia** |\n| --- | --- | --- |\n| October 15th, 2026 (Thu) at 22:00 (UTC) October 16th, 2026 (Fri) at 00:00 (CEST) | October 15th, 2026 (Thu) at 15:00 (PT) October 15th, 2026 (Thu) at 18:00 (ET) | October 16th, 2026 (Fri) at 7:00 (KST/JST) |\n\n※ Crimson Desert Enhanced: Charting the Unknown will not be available on Mac App Store at launch.\nShould the content be planned for release on Mac in the future, we will provide a separate announcement with further details.\n**[Update Regarding Market Availability]**Following a review of content and age rating requirements, Crimson Desert: Charting the Unknown will not be available in certain markets/regions.\nPre-orders for these regions will be closed. Depending on the platform, refunds may be processed automatically, or a refund request may need to be submitted through that platform's standard refund process.\nWe apologize for any inconvenience this may cause and thank you for your understanding"
+"body": "### A new journey into the unknown begins October 29th, 2026!\n\nPre-orders for Crimson Desert Enhanced's new DLC, \"Charting the Unknown,\" will roll out across console and PC, starting with PlayStation Store at 3:00 PM (UTC) on September 3rd, followed by Steam and Epic Games Store, and Microsoft Store at 9:00 PM (UTC).\nPre-order and receive the Charter's Diving Set for Kliff and Oongka and the Charter's Light Diving Set for Damiane as an exclusive pre-order bonus.\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/fd1ea5343b520260901073434557.png)\nLearn more about Charting the Unknown through the official site:\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) Charting the Unknown](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### Charting the Unknown Release Times by Region: (Revised: 2026/30/09)\n\n| **Europe** | **North America** | **Asia** |\n| --- | --- | --- |\n| October 29th, 2026 (Thu) at 22:00 (UTC) October 29th, 2026 (Thu) at 23:00 (CET) | October 29th, 2026 (Thu) at 15:00 (PT) October 29th, 2026 (Thu) at 18:00 (ET) | October 30th, 2026 (Fri) at 7:00 (KST/JST) |\n\n※ Crimson Desert Enhanced: Charting the Unknown will not be available on Mac App Store at launch.\nShould the content be planned for release on Mac in the future, we will provide a separate announcement with further details.\n**[Update Regarding Market Availability]**Following a review of content and age rating requirements, Crimson Desert: Charting the Unknown will not be available in certain markets/regions.\nPre-orders for these regions will be closed. Depending on the platform, refunds may be processed automatically, or a refund request may need to be submitted through that platform's standard refund process.\nWe apologize for any inconvenience this may cause and thank you for your understanding"
 },
 {
 "lang": "zh-CN",
 "no": 129,
 "cat": "공지사항",
-"title": "未知征途：DLC预购相关说明",
+"title": "未知征途：DLC预购相关说明 (内容修改 : 2026/30/09)",
 "utc": "2026-09-03T14:00:00Z",
-"body": "### 迈向未知彼端的全新旅程将于10月16日开启！\n\n《红色沙漠：增强版》全新DLC《未知征途》的预购即将于各平台开放预购。\n预购将于9 月3日下午3点(UTC)起，从PlayStation Store率先开放，随后开放Steam与Epic Games Store。而Microsoft Store则将于同日晚间9点(UTC)正式开放预购。\n预购即可获得预购限定特典。包括克里夫和翁卡专属的“秘境探险家潜水服套装”，以及德米安专属的“秘境探险家轻便潜水服套装”。\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/86c3c416df920260901072719260.png)\n更多关于《未知征途》DLC的相关内容，可通过官方网站进行确认。\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) 未知征途 - 查看详细](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### 未知征途各地区解锁时间\n\n| **欧洲** | **北美** | **亚洲** |\n| --- | --- | --- |\n| 2026年 10月 15日 (星期四) 22:00 (UTC) 2026年 10月 16日 (星期五) 00:00 (CEST) | 2026年 10月 15日 (星期四) 15:00 (PT) 2026年 10月 15日 (星期四) 18:00 (ET) | 2026年 10月 16日 (星期五) 7:00 (KST/JST) |\n\n※ 《红色沙漠：增强版 - 未知征途》暂不支持Mac App Store。\nMac平台版本将于日后推出时另行发布公告。\n**[部分地区使用受限公告]**根据内容及年龄分级审核要求的评估结果，《红色沙漠：未知征途》在部分地区的销售及使用将受到限制。\n目前相关地区的预购已结束。若您已完成预购，可通过所使用的平台退款程序申请退款。其中部分平台，将根据其政策，可能会进行自动退款处理。\n对于给您带来的不便，我们深表歉意。"
+"body": "### 迈向未知彼端的全新旅程将于10月30日开启！\n\n《红色沙漠：增强版》全新DLC《未知征途》的预购即将于各平台开放预购。\n预购将于9 月3日下午3点(UTC)起，从PlayStation Store率先开放，随后开放Steam与Epic Games Store。而Microsoft Store则将于同日晚间9点(UTC)正式开放预购。\n预购即可获得预购限定特典。包括克里夫和翁卡专属的“秘境探险家潜水服套装”，以及德米安专属的“秘境探险家轻便潜水服套装”。\n![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/86c3c416df920260901072719260.png)\n更多关于《未知征途》DLC的相关内容，可通过官方网站进行确认。\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/09/01/d35744e938e20260901070422228.png) 未知征途 - 查看详细](https://crimsondesert.pearlabyss.com/Game/DLC/charting-the-unknown) Template BTN - Big Parchment End\nTemplate End\n\n### 未知征途各地区解锁时间 (内容修改 : 2026/30/09)\n\n| **欧洲** | **北美** | **亚洲** |\n| --- | --- | --- |\n| 2026年 10月 29日 (星期四) 22:00 (UTC) 2026年 10月 29日 (星期四) 23:00 (CET) | 2026年 10月 29日 (星期四) 15:00 (PT) 2026年 10月 29日 (星期四) 18:00 (ET) | 2026年 10月 30日 (星期五) 7:00 (KST/JST) |\n\n※ 《红色沙漠：增强版 - 未知征途》暂不支持Mac App Store。\nMac平台版本将于日后推出时另行发布公告。\n**[部分地区使用受限公告]**根据内容及年龄分级审核要求的评估结果，《红色沙漠：未知征途》在部分地区的销售及使用将受到限制。\n目前相关地区的预购已结束。若您已完成预购，可通过所使用的平台退款程序申请退款。其中部分平台，将根据其政策，可能会进行自动退款处理。\n对于给您带来的不便，我们深表歉意。"
 },
 {
 "lang": "ko-KR",
