@@ -35,14 +35,11 @@
   .head-r { display: flex; align-items: baseline; gap: 18px; }
   .meta { font-size: 12px; color: var(--sub); }
   .head-r { align-items: center; }
-  .langs { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 3px; overflow: hidden; }
-  .lang {
-    background: none; border: none; font: inherit; font-size: 13px; font-weight: 500;
-    color: var(--text); cursor: pointer; padding: 4px 12px; line-height: 1.4;
+  #lang {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--text); background: var(--bg);
+    border: 1px solid var(--rule-strong); border-radius: 3px; padding: 4px 8px; line-height: 1.4; cursor: pointer;
   }
-  .lang + .lang { border-left: 1px solid var(--rule-strong); }
-  .lang:hover:not(.on) { background: var(--hover); }
-  .lang.on { background: var(--rule-strong); color: var(--bg); font-weight: 600; }
+  #lang:hover { background: var(--hover); }
 
   .search { margin: 22px 0 18px; }
   #q {
@@ -131,7 +128,7 @@
     <h1 data-t="title">CD 공지 검색</h1>
     <div class="head-r">
       <span class="meta" id="meta"></span>
-      <span class="langs"><button class="lang on" data-lang="ko">한국어</button><button class="lang" data-lang="en">English</button><button class="lang" data-lang="zh">简体中文</button></span>
+      <select id="lang" aria-label="Language"></select>
     </div>
   </header>
 
@@ -154,15 +151,23 @@
   <footer id="foot"></footer>
 </div>
 
-<script src="data.js"></script>
 <script>
 (function () {
-  const posts = (window.NOTICE_DATA && window.NOTICE_DATA.posts) || [];
   const SITE = 'https://crimsondesert.pearlabyss.com';
   const MAX_HITS = 8;
-  const LOCALE = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN' };
+  // 언어 이름은 공식 홈페이지 언어 선택 메뉴 표기 그대로
+  const LANGS = [
+    ['ko-KR', '한국어'], ['en-US', 'English'], ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'],
+    ['ja-JP', '日本語'], ['de-DE', 'Deutsch'], ['fr-FR', 'Français'], ['es-ES', 'Español (España)'],
+    ['es-MX', 'Español (LATAM)'], ['it-IT', 'Italiano'], ['pl-PL', 'Polski'], ['pt-BR', 'Português (Brasil)'],
+    ['ru-RU', 'Русский'], ['tr-TR', 'TÜRKÇE'],
+  ];
+  // 예전 주소(#lang=en)·저장값 호환
+  const ALIAS = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN' };
+  const SHORT = { 'en-US': 'en', 'zh-CN': 'zh' };
+  // 화면 문구는 한국어·영어·간체만 있고, 나머지 언어는 영어 문구를 쓴다. 업데이트·공지사항 탭 이름은 공홈 표기를 수집해 쓴다
   const T = {
-    ko: {
+    'ko-KR': {
       title: 'CD 공지 검색', all: '전체', upd: '업데이트', ntc: '공지사항',
       placeholder: '검색어를 입력하세요', desc: '최신순', asc: '오래된순', src: '원문',
       meta: latest => `매주 월요일 10:30 자동 수집 · 최신 글 ${latest}`,
@@ -170,9 +175,9 @@
       empty: '일치하는 내용이 없습니다.', noData: '데이터를 불러오지 못했습니다.',
       more: n => `외 ${n}줄 — 제목을 눌러 전문 보기`, img: '[이미지]',
       orig: '공식 홈페이지 표기',
-      foot: `출처: <a href="${SITE}/ko-KR/News/Notice" target="_blank">붉은사막 공식 홈페이지 새소식</a> (게시판 목록에 공개된 글만 수집)<br>게시 시간은 한국 시간 기준입니다. 공식 홈페이지에는 UTC로 표기됩니다.`,
+      foot: loc => `출처: <a href="${SITE}/${loc}/News/Notice" target="_blank">붉은사막 공식 홈페이지 새소식</a> (게시판 목록에 공개된 글만 수집)<br>게시 시간은 한국 시간 기준입니다. 공식 홈페이지에는 UTC로 표기됩니다.`,
     },
-    en: {
+    'en-US': {
       title: 'CD Notice Search', all: 'All', upd: 'Updates', ntc: 'Notices',
       placeholder: 'Search', desc: 'Newest', asc: 'Oldest', src: 'Source',
       meta: latest => `Collected every Monday 10:30 KST · Latest ${latest}`,
@@ -181,9 +186,9 @@
       empty: 'No matches.', noData: 'Failed to load data.',
       more: n => `${n} more line${n === 1 ? '' : 's'} — click the title for the full post`, img: '[image]',
       orig: 'Official site',
-      foot: `Source: <a href="${SITE}/en-US/News/Notice" target="_blank">Crimson Desert official site — News</a> (only posts listed on the board)<br>Times are shown in KST (UTC+9). The official site shows UTC.`,
+      foot: loc => `Source: <a href="${SITE}/${loc}/News/Notice" target="_blank">Crimson Desert official site — News</a> (only posts listed on the board)<br>Times are shown in KST (UTC+9). The official site shows UTC.`,
     },
-    zh: {
+    'zh-CN': {
       title: 'CD 公告搜索', all: '全部', upd: '更新信息', ntc: '公告',
       placeholder: '输入搜索词', desc: '最新', asc: '最早', src: '原文',
       meta: latest => `每周一 10:30 自动收集 · 最新 ${latest}`,
@@ -191,14 +196,33 @@
       empty: '没有匹配的内容。', noData: '数据加载失败。',
       more: n => `另有 ${n} 行 — 点击标题查看全文`, img: '[图片]',
       orig: '官网标示',
-      foot: `来源：<a href="${SITE}/zh-CN/News/Notice" target="_blank">红色沙漠官网 新消息</a>（仅收集公告板列表中公开的帖子）<br>发布时间以韩国时间（UTC+9）显示。官网以 UTC 标示。`,
+      foot: loc => `来源：<a href="${SITE}/${loc}/News/Notice" target="_blank">红色沙漠官网 新消息</a>（仅收集公告板列表中公开的帖子）<br>发布时间以韩国时间（UTC+9）显示。官网以 UTC 标示。`,
     },
   };
   const CAT_KEY = { '업데이트': 'upd', '공지사항': 'ntc' };
   const pad = n => String(n).padStart(2, '0');
+  const tr = () => T[state.lang] || T['en-US'];
+
+  // ---- 언어별 데이터 파일을 처음 고를 때 불러온다
+  const loaded = {};
+  function load(loc) {
+    if (!loaded[loc]) loaded[loc] = new Promise(resolve => {
+      const s = document.createElement('script');
+      s.src = `data/${loc}.js`;
+      s.onload = () => {
+        const d = window.NOTICE_DATA && window.NOTICE_DATA[loc];
+        if (d) d.posts.forEach(prep);
+        resolve(d || null);
+      };
+      s.onerror = () => { delete loaded[loc]; resolve(null); };
+      document.head.appendChild(s);
+    });
+    return loaded[loc];
+  }
+  let data = null;  // 지금 언어의 { lang, cats, posts }
 
   // ---- 전처리: 본문을 줄 단위로 나누고 각 줄의 소제목을 기억
-  posts.forEach(p => {
+  function prep(p) {
     const d = new Date(p.utc);
     const k = new Date(d.getTime() + 9 * 3600 * 1000);
     p.kst = `${k.getUTCFullYear()}.${pad(k.getUTCMonth() + 1)}.${pad(k.getUTCDate())} ${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}`;
@@ -212,25 +236,29 @@
       if (text) p.lines.push({ i, sec: h ? '' : sec, text });
     });
     p.titleLow = p.title.toLowerCase();
-  });
+  }
 
   // ---- 언어 전환: 화면 문구 + 글 개수
+  function catLabel(c) {
+    return (T[state.lang] && T[state.lang][CAT_KEY[c]]) || (data && data.cats[c]) || T['en-US'][CAT_KEY[c]];
+  }
   function applyLang() {
-    const t = T[state.lang];
-    const mine = posts.filter(p => p.lang === LOCALE[state.lang]);
+    const t = tr();
+    const mine = data ? data.posts : [];
     document.documentElement.lang = state.lang;
     document.title = t.title;
     document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t[el.dataset.t]; });
-    document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === state.lang));
-    qEl.placeholder = t.placeholder;
-    document.getElementById('foot').innerHTML = t.foot;
-    document.getElementById('meta').textContent = mine.length
-      ? t.meta(mine.reduce((a, p) => p.kst > a ? p.kst : a, ''))
-      : t.noData;
     document.querySelectorAll('[data-count]').forEach(el => {
       const c = el.dataset.count;
+      if (c) el.previousElementSibling.textContent = catLabel(c);
       el.textContent = mine.filter(p => !c || p.cat === c).length;
     });
+    langEl.value = state.lang;
+    qEl.placeholder = t.placeholder;
+    document.getElementById('foot').innerHTML = t.foot(state.lang);
+    document.getElementById('meta').textContent = mine.length
+      ? t.meta(mine.reduce((a, p) => p.kst > a ? p.kst : a, ''))
+      : (data === undefined ? '' : t.noData);
   }
 
   function plain(s) {
@@ -265,7 +293,7 @@
   // ---- 본문 렌더링 (수집기가 만든 단순 마크다운)
   function inlineMd(s) {
     let h = esc(s);
-    h = h.replace(/!\[\]\(([^)]*)\)/g, '<a href="$1" target="_blank">' + T[state.lang].img + '</a>');
+    h = h.replace(/!\[\]\(([^)]*)\)/g, '<a href="$1" target="_blank">' + tr().img + '</a>');
     h = h.replace(/\[([^\]]*)\]\((https?:[^)]*)\)/g, '<a href="$2" target="_blank">$1</a>');
     h = h.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
     return h;
@@ -304,11 +332,14 @@
   }
 
   // ---- 상태
-  const state = { q: '', cat: '', sort: 'desc', lang: 'ko' };
+  const state = { q: '', cat: '', sort: 'desc', lang: 'ko-KR' };
   const qEl = document.getElementById('q');
   const listEl = document.getElementById('list');
   const sumEl = document.getElementById('summary');
   const sortEl = document.getElementById('sort');
+  const langEl = document.getElementById('lang');
+  langEl.innerHTML = LANGS.map(([loc, name]) => `<option value="${loc}">${name}</option>`).join('');
+  const toLoc = v => ALIAS[v] || (LANGS.some(([loc]) => loc === v) ? v : null);
 
   function readHash() {
     const h = new URLSearchParams(location.hash.slice(1));
@@ -317,8 +348,7 @@
     state.sort = h.get('sort') === 'asc' ? 'asc' : 'desc';
     let saved = null;
     try { saved = localStorage.getItem('notice-search-lang'); } catch (e) {}
-    state.lang = h.get('lang') || saved || 'ko';
-    if (!T[state.lang]) state.lang = 'ko';
+    state.lang = toLoc(h.get('lang')) || toLoc(saved) || 'ko-KR';
     qEl.value = state.q;
     syncControls();
   }
@@ -327,19 +357,35 @@
     if (state.q) h.set('q', state.q);
     if (state.cat) h.set('cat', state.cat);
     if (state.sort === 'asc') h.set('sort', 'asc');
-    if (state.lang !== 'ko') h.set('lang', state.lang);
+    if (state.lang !== 'ko-KR') h.set('lang', SHORT[state.lang] || state.lang);
     const s = h.toString();
     history.replaceState(null, '', s ? '#' + s : location.pathname + location.search);
   }
   function syncControls() {
     document.querySelectorAll('[data-cat]').forEach(c => c.classList.toggle('on', c.dataset.cat === state.cat));
-    sortEl.textContent = T[state.lang][state.sort];
+    sortEl.textContent = tr()[state.sort];
+  }
+
+  // 언어를 바꾸면 그 언어 파일을 불러온 뒤 다시 그린다. 불러오는 사이 다른 언어로 바꾸면 늦게 온 결과는 버린다
+  function switchLang() {
+    const loc = state.lang;
+    data = undefined;
+    applyLang();
+    listEl.innerHTML = '';
+    sumEl.textContent = '';
+    load(loc).then(d => {
+      if (state.lang !== loc) return;
+      data = d;
+      applyLang();
+      render();
+    });
   }
 
   function render() {
+    if (!data) return;
     const inc = parse(state.q);
-    const t = T[state.lang];
-    const pool = posts.filter(p => p.lang === LOCALE[state.lang] && (!state.cat || p.cat === state.cat))
+    const t = tr();
+    const pool = data.posts.filter(p => !state.cat || p.cat === state.cat)
       .sort((a, b) => state.sort === 'asc' ? a.utc.localeCompare(b.utc) : b.utc.localeCompare(a.utc));
 
     const results = [];
@@ -369,7 +415,7 @@
       return `<div class="post" data-idx="${idx}">
         <div class="row">
           <span class="date" title="${t.orig}: ${p.utcLabel}">${p.kst}</span>
-          <span class="cat ${p.cat === '업데이트' ? 'upd' : ''}">${t[CAT_KEY[p.cat]]}</span>
+          <span class="cat ${p.cat === '업데이트' ? 'upd' : ''}">${esc(catLabel(p.cat))}</span>
           <span class="title">${highlight(p.title, inc)}</span>
           <a class="src" href="${SITE}/${p.lang}/News/Notice/Detail?_boardNo=${p.no}" target="_blank">${t.src}</a>
         </div>${hitHtml}<div class="body"></div></div>`;
@@ -405,16 +451,19 @@
   sortEl.addEventListener('click', () => {
     state.sort = state.sort === 'asc' ? 'desc' : 'asc'; syncControls(); writeHash(); render();
   });
-  document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
-    state.lang = b.dataset.lang;
+  langEl.addEventListener('change', () => {
+    state.lang = langEl.value;
     try { localStorage.setItem('notice-search-lang', state.lang); } catch (e) {}
-    syncControls(); applyLang(); writeHash(); render();
-  }));
-  window.addEventListener('hashchange', () => { readHash(); applyLang(); render(); });
+    syncControls(); writeHash(); switchLang();
+  });
+  window.addEventListener('hashchange', () => {
+    const before = state.lang;
+    readHash();
+    if (state.lang !== before) switchLang(); else { applyLang(); render(); }
+  });
 
   readHash();
-  applyLang();
-  render();
+  switchLang();
 })();
 </script>
 </body>
