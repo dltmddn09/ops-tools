@@ -170,7 +170,7 @@
     'ko-KR': {
       title: 'CD 공지 검색', all: '전체', upd: '업데이트', ntc: '공지사항',
       placeholder: '검색어를 입력하세요', desc: '최신순', asc: '오래된순', src: '원문',
-      meta: latest => `매주 월요일 10:30 자동 수집 · 최신 글 ${latest}`,
+      meta: (latest, checked) => `매주 월요일 10:30 자동 수집${checked ? ` · 마지막 갱신 ${checked}` : ''} · 최신 글 ${latest}`,
       sumAll: n => `${n}개 글`, sumHit: (n, h) => `${n}개 글, ${h}줄`,
       empty: '일치하는 내용이 없습니다.', noData: '데이터를 불러오지 못했습니다.',
       more: n => `외 ${n}줄 — 제목을 눌러 전문 보기`, img: '[이미지]',
@@ -180,7 +180,7 @@
     'en-US': {
       title: 'CD Notice Search', all: 'All', upd: 'Updates', ntc: 'Notices',
       placeholder: 'Search', desc: 'Newest', asc: 'Oldest', src: 'Source',
-      meta: latest => `Collected every Monday 10:30 KST · Latest ${latest}`,
+      meta: (latest, checked) => `Collected every Monday 10:30 KST${checked ? ` · Last refreshed ${checked}` : ''} · Latest ${latest}`,
       sumAll: n => `${n} post${n === 1 ? '' : 's'}`,
       sumHit: (n, h) => `${n} post${n === 1 ? '' : 's'}, ${h} line${h === 1 ? '' : 's'}`,
       empty: 'No matches.', noData: 'Failed to load data.',
@@ -191,7 +191,7 @@
     'zh-CN': {
       title: 'CD 公告搜索', all: '全部', upd: '更新信息', ntc: '公告',
       placeholder: '输入搜索词', desc: '最新', asc: '最早', src: '原文',
-      meta: latest => `每周一 10:30 自动收集 · 最新 ${latest}`,
+      meta: (latest, checked) => `每周一 10:30 自动收集${checked ? ` · 最后更新 ${checked}` : ''} · 最新 ${latest}`,
       sumAll: n => `${n} 篇`, sumHit: (n, h) => `${n} 篇，${h} 行`,
       empty: '没有匹配的内容。', noData: '数据加载失败。',
       more: n => `另有 ${n} 行 — 点击标题查看全文`, img: '[图片]',
@@ -257,9 +257,21 @@
     qEl.placeholder = t.placeholder;
     document.getElementById('foot').innerHTML = t.foot(state.lang);
     document.getElementById('meta').textContent = mine.length
-      ? t.meta(mine.reduce((a, p) => p.kst > a ? p.kst : a, ''))
+      ? t.meta(mine.reduce((a, p) => p.kst > a ? p.kst : a, ''), checkedKst())
       : (data === undefined ? '' : t.noData);
   }
+
+  // ---- 마지막 갱신 시각: 수집기가 매번 쓰는 data/meta.js. 캐시로 옛 시각이 보이지 않게 매번 새로 받는다
+  function checkedKst() {
+    const m = window.NOTICE_META;
+    if (!m || !m.checked) return '';
+    const k = new Date(new Date(m.checked).getTime() + 9 * 3600 * 1000);
+    return `${k.getUTCFullYear()}.${pad(k.getUTCMonth() + 1)}.${pad(k.getUTCDate())} ${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}`;
+  }
+  const metaScript = document.createElement('script');
+  metaScript.src = `data/meta.js?t=${Date.now()}`;
+  metaScript.onload = () => applyLang();
+  document.head.appendChild(metaScript);
 
   function plain(s) {
     return s.replace(/^#{2,3} /, '').replace(/^\s*(?:-|\d+\.) /, '')
