@@ -95,7 +95,6 @@ td a{color:var(--navy)}
   <h1>다국어 SRT 생성기</h1>
   <span class="note">완성 SRT의 칸·시간에 번역 엑셀을 채워 언어별 SRT를 만듭니다</span>
   <span class="sp"></span>
-  <button type="button" id="helpBtn">엑셀 양식</button>
   <button type="button" id="resetBtn">초기화</button>
 </div>
 
@@ -581,7 +580,6 @@ $('aiBtn').addEventListener('click', async () => {
 });
 $('aiClose').addEventListener('click', () => $('aiModal').classList.remove('show'));
 $('aiModal').addEventListener('click', e => { if (e.target === $('aiModal')) $('aiModal').classList.remove('show'); });
-$('helpBtn').addEventListener('click', () => $('howList').scrollIntoView({ behavior: 'smooth', block: 'center' }));
 $('resetBtn').addEventListener('click', () => location.reload());
 function flash(btn, word) {
   const t = btn.textContent; btn.textContent = word; btn.classList.add('done');
