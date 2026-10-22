@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>코드 발급 품의서 체크</title>
+<style>
+:root{
+  --navy:#17365d; --navy-2:#24497a; --bg:#f2f3f5; --panel:#fff; --ink:#222; --sub:#666; --line:#d3d7dd; --line-2:#e6e8eb;
+  --th:#eef2f6; --warn:#a15c00; --warn-bg:#fff6e5; --bad:#c00000; --bad-bg:#fdeeee; --ok:#2e7d32; --ok-bg:#edf7ee;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:13px/1.5 "Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+
+/* 상단 바 */
+.bar{background:var(--navy);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;height:44px}
+.bar h1{font-size:15px;margin:0;font-weight:bold;letter-spacing:-.2px}
+.bar .note{font-size:12px;color:#c9d5e6}
+.bar .sp{flex:1}
+.bar button{background:transparent;border:1px solid #6f87a8;color:#fff;border-radius:2px;padding:3px 10px;cursor:pointer}
+.bar button:hover{background:var(--navy-2)}
+
+/* 2단 배치 */
+.layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:12px;padding:12px 16px 40px;max-width:1280px;margin:0 auto;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:minmax(0,1fr)}.field textarea{height:180px}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:2px;margin-bottom:12px}
+.box > h2{font-size:13px;margin:0;padding:7px 10px;border-bottom:1px solid var(--line);background:#f8f9fa;display:flex;align-items:center;gap:8px}
+.box > h2 .tag{font-weight:normal;font-size:12px;color:var(--sub)}
+.box .in{padding:10px}
+
+/* 입력 */
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.field-row{display:grid;grid-template-columns:3fr 2fr;gap:8px;margin-bottom:10px}
+.field-row .field{margin-bottom:0}
+.field label{display:block;font-weight:bold;margin-bottom:4px}
+.field input,.field textarea{width:100%;border:1px solid #b9bfc7;border-radius:2px;padding:6px 8px;background:#fff}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 2px #d4dff0}
+.field textarea{height:340px;resize:vertical;font-size:12px;line-height:1.45}
+.hint{color:var(--sub);font-size:12px;margin-top:4px}
+.hint.err{color:var(--bad)}
+.how{margin:0;padding-left:18px;color:var(--sub);font-size:12px}
+.how li{margin:2px 0}
+
+/* 복사 — 결과가 길어도 버튼이 화면 위에 붙어 있게 */
+.copybar{position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.10)}
+.copy{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn-main{background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:2px;padding:9px 18px;font-size:14px;font-weight:bold;cursor:pointer;min-width:220px}
+.btn-main:hover{background:var(--navy-2)}
+.btn-main:disabled{background:#a9b3c1;border-color:#a9b3c1;cursor:not-allowed}
+.btn-main.done{background:var(--ok);border-color:var(--ok)}
+.copy .why{font-size:12px;color:var(--sub)}
+.copy .why b{color:var(--ink)}
+kbd{font:11px Consolas,monospace;border:1px solid #c3c8cf;border-bottom-width:2px;border-radius:2px;padding:0 4px;background:#fafafa}
+
+/* 확인 사항 */
+.issues{margin:0;padding:0;list-style:none}
+.issues li{padding:6px 10px;border-bottom:1px solid var(--line-2);display:flex;gap:8px}
+.issues li:last-child{border-bottom:0}
+.issues .lv{flex:none;font-size:11px;font-weight:bold;border-radius:2px;padding:0 5px;height:18px;line-height:18px;margin-top:1px}
+.issues .lv.bad{background:var(--bad);color:#fff}
+.issues .lv.warn{background:var(--warn);color:#fff}
+.issues .none{color:var(--ok)}
+
+/* 요약 */
+.sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:0}
+.sum > div{padding:8px 10px;border-right:1px solid var(--line-2)}
+.sum > div:last-child{border-right:0}
+.sum .k{font-size:12px;color:var(--sub)}
+.sum .v{font-size:18px;font-weight:bold;font-variant-numeric:tabular-nums}
+.sum .v.small{font-size:14px;padding-top:4px}
+@media (max-width:560px){.sum{grid-template-columns:repeat(2,minmax(0,1fr))}.sum > div:nth-child(2){border-right:0}.sum > div:nth-child(-n+2){border-bottom:1px solid var(--line-2)}}
+
+/* 표 */
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line-2);padding:6px 10px;text-align:left;white-space:nowrap}
+th{background:var(--th);font-weight:bold;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.grp td{background:#f7f8fa;font-weight:bold;border-top:1px solid var(--line)}
+tr.tot td{font-weight:bold;border-top:2px solid var(--line);border-bottom:0}
+td.qty{font-weight:bold;font-size:14px}
+
+/* 선택 */
+.pick{display:grid;grid-template-columns:80px 1fr;row-gap:8px;align-items:center}
+.pick .lab{font-weight:bold}
+.opts{display:flex;flex-wrap:wrap;gap:4px 16px}
+.opts label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.opts input{margin:0;width:15px;height:15px;accent-color:var(--navy)}
+.src{grid-column:2;font-size:12px;color:var(--sub);margin-top:-4px}
+.src.need{color:var(--bad)}
+
+.kv{width:100%}
+.kv th{width:150px;background:var(--th)}
+.kv td{white-space:normal}
+
+.empty{background:var(--panel);border:1px dashed #b9bfc7;border-radius:2px;padding:40px 16px;text-align:center;color:var(--sub)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>코드 발급 품의서 체크</h1>
+  <span class="note">품의서 → 관리대장 붙여넣기</span>
+  <span class="sp"></span>
+  <button id="resetBtn" type="button">초기화</button>
+</header>
+<main class="layout">
+  <section>
+    <div class="box">
+      <h2>품의서 입력</h2>
+      <div class="in">
+        <div class="field-row">
+          <div class="field"><label for="reqNo">품의번호</label><input id="reqNo" autocomplete="off" placeholder="예: 26-101577"></div>
+          <div class="field"><label for="issuer">발급자</label><input id="issuer" autocomplete="off" placeholder="이름 (한 번 적으면 기억)"></div>
+        </div>
+        <div class="field"><label for="paste">품의서 본문</label>
+          <textarea id="paste" placeholder="그룹웨어 품의서 보기 화면에서&#10;Ctrl+A → Ctrl+C 한 뒤&#10;여기를 누르고 Ctrl+V"></textarea>
+          <div class="hint" id="pasteInfo"></div></div>
+      </div>
+    </div>
+    <div class="box">
+      <h2>사용 순서</h2>
+      <div class="in">
+        <ol class="how">
+          <li>품의서 보기 화면에서 본문 전체 복사(<kbd>Ctrl</kbd>+<kbd>A</kbd>, <kbd>Ctrl</kbd>+<kbd>C</kbd>)</li>
+          <li>위 칸에 붙여넣고 품의번호 입력 (발급자는 처음 한 번만)</li>
+          <li>확인 사항을 보고 <b>관리대장용 복사</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>)</li>
+          <li>관리대장 빈 줄 A열에 붙여넣기</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <section id="out"></section>
+</main>
+<script>
+'use strict';
+/* ---------- 기준값 (관리대장 목록 시트와 같게 유지) ---------- */
+const PRICE = {   // 품의서 양식 참고가. Pre-order·Day 1 같은 가격 적용은 추정
+  '(Pre-order) CD - Standard': 79800, '(Day 1) CD - Standard Edition': 79800,
+  '(Pre-order) CD - Deluxe': 92800, '(Day 1) CD - Deluxe Edition': 92800,
+  '(Pre-order) Charting the Unknown': 27800, '(Day 1) Charting the Unknown': 27800,
+};
+const PRODUCT_ORDER = ['(Pre-order) CD - Standard', '(Pre-order) CD - Deluxe', '(Day 1) CD - Standard Edition',
+  '(Day 1) CD - Deluxe Edition', '(Pre-order) Charting the Unknown', '(Day 1) Charting the Unknown',
+  'CD - Deluxe Pack', 'CD - Drops', 'DLC - Drops', 'PS Exclusive Bonus'];
+const ETC = ['CD - Deluxe Pack', 'CD - Drops', 'DLC - Drops', 'PS Exclusive Bonus'];
+const PLATFORMS = ['Steam', 'PS', 'XB', 'EPIC', 'MAC', 'NS'];
+const REGION_ORDER = ['GLOBAL', 'TIER 1', 'TIER 2', 'TIER 3', 'TIER 4', 'TIER 5', 'EU', 'NA', 'AS', 'JP', 'KR'];
+const APPROVAL_LIMIT = 10000000;
+
+/* ---------- 품의서 언어별 표기 (한국어 · 영어 · 일본어 · 중문 번체) ----------
+   새 언어 양식이 오면 각 목록 끝에 그 언어 표기를 추가한다.
+   비교는 norm()(전각→반각 NFKC, 공백 정리) 후 앞부분 일치라서 '：' '／' '（）' 같은 전각 기호는 양식 그대로 적어도 된다. */
+const LABEL = {
+  route:  ['요청 경로', 'Request channel', '申請経路', '申請途徑'],
+  target: ['제공 대상', 'Recipient type', '受領者区分', '提供對象'],
+  title:  ['게임 타이틀', 'Game title', 'ゲームタイトル', '遊戲名稱'],
+  date:   ['발급 희망일', 'Requested issue date', '希望発行日', '希望發放日'],
+  dist:   ['최종 배포 예정자', 'Final distributor', '最終配布担当', '最終發放負責人'],
+  org:    ['소속', 'Affiliation', '所属', '所屬'],
+  owner:  ['담당자명', 'Person in charge', '担当者', '負責人姓名'],
+};
+// 관리대장에는 한국어 표기 하나로 통일해서 넣는다 (키 = 관리대장 값)
+const ROUTE_ALIAS = {
+  '계약에 따른 요청': ['계약에 따른 요청', 'Contract-based request', '契約に基づく申請', '依合約申請'],
+  '외부 요청': ['외부 요청', 'External request', '外部からの申請', '外部申請'],
+  '내부 결정': ['내부 결정', 'Internal decision', '社内判断', '內部決定'],
+};
+const TARGET_ALIAS = {
+  '파트너사': ['파트너사', 'Partner', 'パートナー', '合作夥伴'],
+  '미디어/크리에이터': ['미디어/크리에이터', 'Media/Creator', 'メディア／クリエイター', '媒體/創作者'],
+  '내부 활용': ['내부 활용', 'Internal use', '社内利用', '內部使用'],
+};
+const ROUTES = Object.keys(ROUTE_ALIAS), TARGETS = Object.keys(TARGET_ALIAS);
+const GROUPS = ['게임 본품', 'DLC', 'etc.', 'Base Game', '本編', '遊戲本體'];       // 수량 표 묶음 제목
+// 일본어 양식은 etc. 묶음 제목과 기타 행이 둘 다 「その他」. 묶음 행은 값 칸이 비어 있어 기타로 처리해도 결과가 없다
+const OTHER = ['기타', 'Other', 'その他', '其他'];
+const ETC_PLACEHOLDERS = ['이 표에 기재되어 있지 않은 항목에 대한 요청이 있는 경우 기재',
+  'Enter here if requesting items not listed in this table', '表にない項目を申請する場合はここに入力してください', '如申請本表未列之項目，請於此填寫'];
+const INFO_PLACEHOLDERS = [
+  'ex. 붉은사막과 도깨비 코드를 동시에 요청 불가', "[입력] YYYY-MM-DD / 별도 유효기간이 없으면 '없음'",
+  '팀명 또는 회사명(대행사명, 파트너사명)', '코드를 외부로 직접 전달하는 담당자 이름',
+  'ex. Crimson Desert and DokeV codes cannot be requested at the same time',
+  "[Enter] YYYY-MM-DD / Enter 'None' if there is no specific validity period",
+  'Team name or company name (agency name, partner name)', 'Name of the person who directly delivers the codes externally',
+  '例： Crimson DesertとDokeVのコードは同時に申請できません', '［入力］YYYY-MM-DD / 有効期間の指定がない場合は「なし」と入力',
+  'チーム名または会社名（代理店名、パートナー名）', 'コードを社外へ直接配布する担当者名',
+  'ex. 無法同時申請Crimson Desert與DokeV序號', "[輸入] YYYY-MM-DD / 如無特定有效期限，請填寫'無'",
+  '團隊名稱或公司名稱（代理商名稱、合作夥伴名稱）', '直接向外部交付序號之負責人姓名',
+];
+// 영문 양식 PS 머리글 → 한국어 양식 표기. EU·MENA·ANZ=EU, America=NA, Asia=AS (양식 안내문 기준 추정)
+const REGION_ALIAS = { 'EU,MENA,ANZ': 'EU', 'AMERICA': 'NA', 'ASIA': 'AS' };
+const PHASE = [['Pre-order', /pre-?order|予約/i], ['Day 1', /day ?1|発売日/i]];   // 일본어: （予約特典）（発売日特典）
+
+/* ---------- 유틸 ---------- */
+const norm = (s) => String(s ?? '').normalize('NFKC').replace(/[ 　​]/g, ' ').replace(/\s+/g, ' ').trim();
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (n) => Number(n).toLocaleString('ko-KR');
+const startsAny = (s, list) => { s = norm(s); return list.some(x => s.startsWith(norm(x))); };
+const regionKey = (s) => norm(s).toUpperCase().replace(/\s/g, '');
+const isRegion = (s) => /^(GLOBAL|TIER[1-5]|EU|NA|AS|JP|KR)$/.test(regionKey(s)) || regionKey(s) in REGION_ALIAS;
+const normRegion = (s) => REGION_ALIAS[regionKey(s)] || regionKey(s).replace(/^TIER(\d)$/, 'TIER $1');
+const normPlatform = (s) => PLATFORMS.find(p => p.toLowerCase() === norm(s).toLowerCase()) || '';
+function phaseOf(s) { s = norm(s); const hit = PHASE.find(([, re]) => re.test(s)); return hit ? hit[0] : ''; }
+
+/** 상품 이름 + 구분(Pre-order/Day 1) → 관리대장 상품명. 모르는 이름이면 null */
+function mapProduct(name, phase) {
+  let n = norm(name);
+  const m = n.match(/^\((pre-?order|day ?1)\)\s*/i);
+  if (m) { phase = phase || phaseOf(m[1]); n = n.slice(m[0].length); }
+  if (n === 'CD - Standard' || n === 'CD - Deluxe') return '(Pre-order) ' + n;
+  if (n === 'CD - Standard Edition' || n === 'CD - Deluxe Edition') return '(Day 1) ' + n;
+  if (n === 'Charting the Unknown') return phase ? `(${phase}) Charting the Unknown` : null;
+  if (ETC.includes(n)) return n;
+  return null;
+}
+
+/* ---------- 해석: 공통 처리 ---------- */
+// events: {type:'section', platforms:[]}, {type:'regions', regions:[]}, {type:'item', phase, name, values:[]}
+function interpret(events) {
+  const lines = new Map(), warns = [], etc = [];
+  let platforms = [], cols = [], sectionCount = 0;
+  for (const ev of events) {
+    if (ev.type === 'section') { platforms = ev.platforms; cols = []; sectionCount++; continue; }
+    if (ev.type === 'regions') {
+      cols = ev.regions.map((r, i) => {
+        const p = platforms.filter(Boolean).length === 1 ? platforms.find(Boolean) : platforms[i];
+        return r && p ? `${p} / ${normRegion(r)}` : '';
+      });
+      continue;
+    }
+    if (!cols.length) continue;
+    const name = norm(ev.name);
+    if (GROUPS.includes(name)) continue;
+    const section = [...new Set(platforms.filter(Boolean))].join('·');
+    if (OTHER.includes(name)) {
+      let t = norm(ev.values.join(' '));
+      ETC_PLACEHOLDERS.forEach(ph => { t = t.replace(norm(ph), ''); });
+      t = t.trim();
+      if (t) etc.push({ section, text: t });
+      continue;
+    }
+    const product = mapProduct(name, phaseOf(ev.phase));
+    const nonEmpty = ev.values.slice(0, cols.length).some(v => norm(v) !== '' && norm(v) !== '0');
+    if (!product) { if (nonEmpty) warns.push(`${section} 표의 "${name}" 행을 알 수 없는 상품으로 건너뜀`); continue; }
+    ev.values.slice(0, cols.length).forEach((raw, i) => {
+      const key = cols[i]; if (!key) return;
+      const v = norm(raw).replace(/[,개]/g, '').replace(/\s/g, '');
+      if (v === '' || v === '0') return;
+      if (!/^\d+$/.test(v)) { warns.push(`${key} · ${product}: 숫자가 아닌 값 "${norm(raw)}" — 직접 확인`); return; }
+      const k = key + '\u0001' + product;
+      if (lines.has(k)) warns.push(`${key} · ${product} 칸이 두 번 나와 합산함`);
+      lines.set(k, (lines.get(k) || 0) + Number(v));
+    });
+  }
+  const out = [...lines].map(([k, qty]) => { const [pr, product] = k.split('\u0001'); return { pr, product, qty }; });
+  const pIdx = (pr) => { const [p, r] = pr.split(' / '); return PLATFORMS.indexOf(p) * 100 + REGION_ORDER.indexOf(r); };
+  out.sort((a, b) => pIdx(a.pr) - pIdx(b.pr) || PRODUCT_ORDER.indexOf(a.product) - PRODUCT_ORDER.indexOf(b.product));
+  return { lines: out, warns, etc, sectionCount };
+}
+
+/* ---------- 해석: HTML (서식 있는 복사 또는 소스) ---------- */
+function tableGrid(table) {
+  const grid = [];
+  [...table.rows].forEach((tr, r) => {
+    grid[r] = grid[r] || [];
+    let c = 0;
+    for (const td of tr.cells) {
+      while (grid[r][c]) c++;
+      const rs = Math.max(1, td.rowSpan || 1), cs = Math.max(1, td.colSpan || 1);
+      for (let i = 0; i < rs; i++) { grid[r + i] = grid[r + i] || []; for (let j = 0; j < cs; j++) grid[r + i][c + j] = td; }
+      c += cs;
+    }
+  });
+  return grid;
+}
+function eventsFromHTML(doc) {
+  const events = [];
+  for (const table of doc.querySelectorAll('table')) {
+    const grid = tableGrid(table);
+    for (const row of grid) {
+      if (!row) continue;
+      const txt = (c) => norm(row[c]?.textContent);
+      const rest = row.slice(2).map(td => norm(td?.textContent));
+      const nonEmptyRest = rest.filter(Boolean);
+      if (!txt(0) && !txt(1) && nonEmptyRest.length && nonEmptyRest.every(normPlatform)) {
+        events.push({ type: 'section', platforms: rest.map(normPlatform) }); continue;
+      }
+      if (!txt(0) && !txt(1) && nonEmptyRest.length && nonEmptyRest.every(isRegion)) {
+        events.push({ type: 'regions', regions: rest.map(s => isRegion(s) ? s : '') }); continue;
+      }
+      if (!row[0] || !row[1]) continue;
+      const same = row[0] === row[1];
+      // 값 칸: 병합된 칸(기타 안내문 등)은 한 번만
+      const seen = new Set(), values = [];
+      row.slice(2).forEach(td => { if (td && seen.has(td)) { values.push(''); return; } seen.add(td); values.push(td ? td.textContent : ''); });
+      events.push({ type: 'item', phase: same ? '' : txt(0), name: same ? txt(0) : txt(1), values });
+    }
+  }
+  return events;
+}
+// 체크박스 뒤에 나오는 첫 글자(다음 체크박스 전까지). 보기 글자가 다른 태그에 들어 있어도 읽힘
+function labelAfter(el) {
+  const w = el.ownerDocument.createTreeWalker(el.ownerDocument.body, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+  w.currentNode = el;
+  let n;
+  while ((n = w.nextNode())) {
+    if (n.nodeType === 1 && n.tagName === 'INPUT') break;
+    if (n.nodeType === 3) { const t = norm(n.textContent); if (t) return t; }
+  }
+  return '';
+}
+const cleanInfo = (s) => { s = norm(s); INFO_PLACEHOLDERS.forEach(p => { s = s.replace(norm(p), ''); }); return s.trim(); };
+/** 최종 배포 예정자 칸의 입력 줄들 → 소속·담당자.
+ *  「소속:」「담당자명:」 머리말이 있으면 그걸로, 작성자가 머리말을 지우고 값만 쓴 줄은 순서로(앞=소속, 뒤=담당자) 채운다.
+ *  positional: 줄 위치가 칸 위치와 같을 때(서식 복사) true — 빈 칸이 있어도 순서가 밀리지 않음 */
+function splitDist(items, positional) {
+  let org = '', owner = '';
+  const loose = [];
+  items.forEach((t, i) => {
+    const after = () => cleanInfo(norm(t).replace(/^[^:]*:/, ''));
+    if (startsAny(t, LABEL.org)) org = after();
+    else if (startsAny(t, LABEL.owner)) owner = after();
+    else loose.push({ i, v: cleanInfo(t) });
+  });
+  if (positional) {
+    loose.forEach(({ i, v }) => { if (i === 0 && !org) org = v; else if (i === 1 && !owner) owner = v; });
+  } else {
+    const vals = loose.map(x => x.v).filter(Boolean);
+    if (!org && vals.length) org = vals.shift();
+    if (!owner && vals.length) owner = vals.shift();
+  }
+  return { org, owner };
+}
+function infoFromHTML(doc) {
+  const info = {};
+  const clean = cleanInfo;
+  // 체크된 칸의 보기 이름 → 기준 목록 이름으로. 체크박스 자체가 없으면 null(복사 안 됨)
+  const checkedOf = (td, alias) => {
+    const boxes = [...td.querySelectorAll('input[type=checkbox],input[type=radio]')];
+    if (!boxes.length) return null;
+    return boxes.filter(b => b.hasAttribute('checked')).map(labelAfter)
+      .map(t => Object.keys(alias).find(k => startsAny(t, alias[k])) || '').filter(Boolean);
+  };
+  for (const td of doc.querySelectorAll('td')) {
+    const label = norm(td.textContent), v = td.nextElementSibling;
+    if (!v || label.length > 60) continue;
+    if (startsAny(label, LABEL.route)) info.route = checkedOf(v, ROUTE_ALIAS);
+    else if (startsAny(label, LABEL.target)) info.target = checkedOf(v, TARGET_ALIAS);
+    else if (startsAny(label, LABEL.title)) info.title = clean(v.textContent);
+    else if (startsAny(label, LABEL.date)) info.date = clean(v.textContent);
+    else if (startsAny(label, LABEL.dist)) {
+      // 입력 칸 = 체크박스가 없는 가장 안쪽 블록(div/p). 양식상 첫 칸 소속, 둘째 칸 담당자
+      const blocks = [...v.querySelectorAll('div, p')]
+        .filter(b => !b.querySelector('div, p') && !b.querySelector('input'))
+        .map(b => b.textContent);
+      Object.assign(info, splitDist(blocks, true));
+    }
+  }
+  return info;
+}
+/** 글자만 붙여넣은 경우: 항목 이름 줄 다음에 오는 줄들을 값으로 읽는다.
+ *  값 모으기는 탭이 있는 다음 항목 줄이나 「3. …」 같은 절 제목에서 멈춘다. 체크박스는 읽을 수 없다 */
+function infoFromText(text) {
+  const lines = text.split(/\r?\n/);
+  const isStop = (l) => l.includes('\t') || /^\s*\d+(\.\d+)*\.\s/.test(norm(l));
+  const valueAfter = (labels) => {
+    const i = lines.findIndex(l => startsAny(l, labels));
+    if (i < 0) return null;
+    const vals = [], first = lines[i].split('\t').slice(1).join(' ');
+    if (norm(first)) vals.push(first);
+    for (let j = i + 1; j < lines.length && !isStop(lines[j]); j++) vals.push(lines[j]);
+    return vals;
+  };
+  const title = valueAfter(LABEL.title), date = valueAfter(LABEL.date), dist = valueAfter(LABEL.dist);
+  if (!title && !date && !dist) return null;
+  const join = (v) => cleanInfo((v || []).map(norm).filter(Boolean).join(' '));
+  // 배포 예정자 첫 줄의 「구분: □홈원 □오피스 …」는 값이 아니므로 뺀다
+  const distLines = (dist || []).filter((l, k) => !(k === 0 && /[:：]/.test(l) && !startsAny(l, LABEL.org) && !startsAny(l, LABEL.owner)));
+  return { textOnly: true, title: join(title), date: join(date), ...splitDist(distLines.filter(l => norm(l)), false) };
+}
+
+/* ---------- 해석: 일반 텍스트 (탭 구분) ---------- */
+function eventsFromText(text) {
+  const events = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.includes('\t')) {
+      const one = norm(line);
+      if (normPlatform(one)) events.push({ type: 'section', platforms: [normPlatform(one)] });
+      continue;
+    }
+    const cells = line.split('\t');
+    const ne = cells.map(norm).filter(Boolean);
+    if (!ne.length) continue;
+    if (ne.every(normPlatform)) { events.push({ type: 'section', platforms: ne.map(normPlatform) }); continue; }
+    if (ne.every(isRegion)) { events.push({ type: 'regions', regions: ne }); continue; }
+    const i = cells.findIndex(c => { const n = norm(c); return n && (mapProduct(n, 'Pre-order') || GROUPS.includes(n) || OTHER.includes(n)); });
+    if (i < 0) continue;
+    const prev = i > 0 ? norm(cells[i - 1]) : '';
+    events.push({ type: 'item', phase: phaseOf(prev) ? prev : '', name: cells[i], values: cells.slice(i + 1) });
+  }
+  return events;
+}
+
+/* ---------- 화면 ---------- */
+const $ = (id) => document.getElementById(id);
+let current = null;
+let sel = { route: '', targets: [], routeSrc: '', targetSrc: '' };
+
+function parseInput(html, text) {
+  let events = [], info = null, mode = '';
+  if (html && /<table/i.test(html)) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    events = eventsFromHTML(doc); info = infoFromHTML(doc); mode = '서식 포함';
+  } else if (text && /<table/i.test(text)) {
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    events = eventsFromHTML(doc); info = infoFromHTML(doc); mode = 'HTML 소스';
+  } else if (text) {
+    events = eventsFromText(text); info = infoFromText(text); mode = '텍스트만';
+  }
+  return { ...interpret(events), info, mode };
+}
+
+// 품의서 체크 표시로 요청 경로·제공 대상 기본값을 잡는다. 못 읽은 사유는 화면에 남김
+function setCurrent(r) {
+  current = r;
+  sel = { route: '', targets: [], routeSrc: '', targetSrc: '' };
+  if (!r) return;
+  const route = r.info?.route, target = r.info?.target;
+  if (route && route.length === 1) { sel.route = route[0]; sel.routeSrc = 'read'; }
+  else sel.routeSrc = !r.info || r.info.textOnly ? 'text' : route == null ? 'none' : route.length > 1 ? 'multi' : 'empty';
+  if (target && target.length) { sel.targets = TARGETS.filter(t => target.includes(t)); sel.targetSrc = 'read'; }
+  else sel.targetSrc = !r.info || r.info.textOnly ? 'text' : target == null ? 'none' : 'empty';
+}
+const SRC = {
+  read: ['품의서 체크 내용대로 선택됨', false],
+  manual: ['직접 선택함', false],
+  text: ['글자만 붙여넣어져 체크 표시를 읽지 못함 — 품의서를 보고 선택', true],
+  none: ['체크박스를 찾지 못함 — 품의서를 보고 선택', true],
+  empty: ['품의서에 체크된 칸 없음 — 품의서를 보고 선택', true],
+  multi: ['두 개 이상 체크돼 있음 — 하나만 선택', true],
+};
+
+function issuesOf(r, value, noPrice) {
+  const list = [];   // [수준, 내용]
+  if (value > APPROVAL_LIMIT) list.push(['warn', `평가액 ${fmt(value)}원 — 1천만원 초과라 총괄전결 대상. 결재선 확인`]);
+  if (noPrice.length) list.push(['warn', `단가 없는 상품은 평가액에서 제외: ${[...new Set(noPrice.map(l => l.product))].join(', ')}`]);
+  r.etc.forEach(e => list.push(['bad', `기타 요청 (${e.section} 표): ${e.text} — 관리대장에 직접 추가 (상품 칸에 항목명)`]));
+  r.warns.forEach(w => list.push(['bad', w]));
+  if (!sel.route) list.push(['bad', '요청 경로 미선택']);
+  if (!sel.targets.length) list.push(['bad', '제공 대상 미선택']);
+  return list;
+}
+
+function render() {
+  const out = $('out');
+  if (!current) { out.innerHTML = '<div class="empty">왼쪽에 품의서를 붙여넣으면 발급할 코드 목록이 여기에 나옵니다.</div>'; return; }
+  const r = current;
+  if (!r.sectionCount) {
+    out.innerHTML = '<div class="empty">수량 표를 찾지 못했습니다.<br>품의서 보기 화면 본문을 한 번 클릭한 뒤 Ctrl+A → Ctrl+C로 다시 복사해 주세요.</div>';
+    return;
+  }
+  const { lines, info } = r;
+  const total = lines.reduce((s, l) => s + l.qty, 0);
+  const value = lines.reduce((s, l) => s + (PRICE[l.product] || 0) * l.qty, 0);
+  const noPrice = lines.filter(l => !PRICE[l.product]);
+  const issues = issuesOf(r, value, noPrice);
+  const reqNo = norm($('reqNo').value);
+  const issuer = norm($('issuer').value);
+  const ready = reqNo && issuer && lines.length;
+  const why = !lines.length ? '수량이 입력된 칸이 없습니다'
+    : !reqNo ? '<b>품의번호</b>를 입력하면 복사할 수 있습니다'
+    : !issuer ? '<b>발급자</b>를 입력하면 복사할 수 있습니다'
+    : `관리대장 빈 줄의 <b>A열</b>을 누르고 <kbd>Ctrl</kbd>+<kbd>V</kbd> · 상태는 '미발급'으로 들어갑니다`;
+
+  // 플랫폼별 묶음
+  const groups = [];
+  lines.forEach(l => {
+    const [p, reg] = l.pr.split(' / ');
+    let g = groups[groups.length - 1];
+    if (!g || g.p !== p) groups.push(g = { p, rows: [] });
+    g.rows.push({ ...l, reg });
+  });
+  const [routeMsg, routeNeed] = SRC[sel.routeSrc] || ['', false];
+  const [targetMsg, targetNeed] = SRC[sel.targetSrc] || ['', false];
+
+  out.innerHTML = `
+    <div class="box copybar"><div class="in copy">
+      <button class="btn-main" id="copyBtn" type="button" ${ready ? '' : 'disabled'}>관리대장용 복사 (${lines.length}줄)</button>
+      <span class="why">${why}</span>
+    </div></div>
+
+    <div class="box"><h2>확인 사항 <span class="tag">${issues.length ? issues.length + '건' : ''}</span></h2>
+      <ul class="issues">${issues.length
+        ? issues.map(([lv, t]) => `<li><span class="lv ${lv}">${lv === 'bad' ? '확인' : '참고'}</span><span>${esc(t)}</span></li>`).join('')
+        : '<li class="none">없음</li>'}</ul>
+    </div>
+
+    <div class="box"><div class="sum">
+      <div><div class="k">총 수량</div><div class="v">${fmt(total)}</div></div>
+      <div><div class="k">발급 줄 수</div><div class="v">${fmt(lines.length)}</div></div>
+      <div><div class="k">평가액 (단가 있는 상품)</div><div class="v">${fmt(value)}</div></div>
+      <div><div class="k">전결 기준</div><div class="v small">${value > APPROVAL_LIMIT ? '총괄전결' : '책임리더전결'}</div></div>
+    </div></div>
+
+    <div class="box"><h2>발급할 코드 <span class="tag">${esc(r.mode)} · 플랫폼 표 ${r.sectionCount}개 인식</span></h2>
+      ${lines.length ? `<div class="tw"><table>
+        <thead><tr><th>플랫폼</th><th>권역</th><th>상품</th><th class="n">수량</th></tr></thead>
+        <tbody>${groups.map(g => `
+          <tr class="grp"><td colspan="3">${esc(g.p)}</td><td class="n">${fmt(g.rows.reduce((s, x) => s + x.qty, 0))}</td></tr>
+          ${g.rows.map(x => `<tr><td></td><td>${esc(x.reg)}</td><td>${esc(x.product)}</td><td class="n qty">${fmt(x.qty)}</td></tr>`).join('')}`).join('')}
+          <tr class="tot"><td colspan="3">합계</td><td class="n">${fmt(total)}</td></tr>
+        </tbody></table></div>` : '<div class="in">수량이 입력된 칸이 없습니다.</div>'}
+    </div>
+
+    <div class="box"><h2>요청 경로 · 제공 대상</h2><div class="in pick">
+      <span class="lab">요청 경로</span>
+      <div class="opts">${ROUTES.map(x => `<label><input type="radio" name="route" value="${esc(x)}" ${sel.route === x ? 'checked' : ''}>${esc(x)}</label>`).join('')}</div>
+      <div class="src ${routeNeed && !sel.route ? 'need' : ''}">${esc(routeMsg)}</div>
+      <span class="lab">제공 대상</span>
+      <div class="opts">${TARGETS.map(x => `<label><input type="checkbox" name="target" value="${esc(x)}" ${sel.targets.includes(x) ? 'checked' : ''}>${esc(x)}</label>`).join('')}</div>
+      <div class="src ${targetNeed && !sel.targets.length ? 'need' : ''}">${esc(targetMsg)}</div>
+    </div></div>
+
+    ${info ? `<div class="box"><h2>품의서 기재 내용</h2><table class="kv">
+      <tr><th>게임 타이틀</th><td>${esc(info.title) || '-'}</td></tr>
+      <tr><th>배포 소속 · 담당자</th><td>${esc(info.org) || '-'}${info.owner ? ' · ' + esc(info.owner) : ''}</td></tr>
+      <tr><th>발급 희망일 · 유효기간</th><td>${esc(info.date) || '-'}</td></tr>
+    </table></div>` : ''}`;
+}
+
+// 관리대장 발급 시트 A~L 순서 그대로 (관리대장 열 순서를 바꾸면 여기도 같이 바꿀 것).
+// F(상태)는 '미발급'으로 시작해 엑셀에서 드롭다운으로 바꿈
+function ledgerText() {
+  const info = current.info;
+  const shared = [sel.route, sel.targets.join(', '), info?.title || '', info?.org || '', info?.owner || '', info?.date || ''];
+  const cell = (v) => String(v ?? '').replace(/[\t\r\n]+/g, ' ');
+  return current.lines.map(l => [norm($('reqNo').value), l.pr, l.product, norm($('issuer').value), l.qty, '미발급', ...shared].map(cell).join('\t'))
+    .join('\n');   // \r\n이면 엑셀에 빈 줄이 끼어들 수 있음
+}
+function writeClipboard(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+  return legacyCopy(text);
+}
+function legacyCopy(text) {
+  const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+  const ok = document.execCommand('copy'); ta.remove();
+  return ok ? Promise.resolve() : Promise.reject();
+}
+function doCopy() {
+  const btn = $('copyBtn');
+  if (!btn || btn.disabled) return;
+  writeClipboard(ledgerText()).then(() => {
+    btn.textContent = '복사됨 — 관리대장 A열에 붙여넣기'; btn.classList.add('done');
+    clearTimeout(doCopy.t);
+    doCopy.t = setTimeout(() => { btn.textContent = `관리대장용 복사 (${current.lines.length}줄)`; btn.classList.remove('done'); }, 2500);
+  }, () => { btn.textContent = '복사 실패 — 다시 눌러 주세요'; });
+}
+
+function afterParse(mode) {
+  const info = $('pasteInfo');
+  if (!current) { info.textContent = ''; info.className = 'hint'; }
+  else if (!current.sectionCount) { info.textContent = '수량 표를 찾지 못함'; info.className = 'hint err'; }
+  else { info.textContent = `${mode} 붙여넣기 · 플랫폼 표 ${current.sectionCount}개, 발급 ${current.lines.length}줄`; info.className = 'hint'; }
+  render();
+  if (current?.sectionCount && !norm($('reqNo').value)) $('reqNo').focus();
+}
+
+/* ---------- 이벤트 ---------- */
+$('paste').addEventListener('paste', (e) => {
+  const html = e.clipboardData?.getData('text/html') || '';
+  if (html && /<table/i.test(html)) {
+    e.preventDefault();
+    $('paste').value = e.clipboardData.getData('text/plain') || '(서식 포함 내용)';
+    setCurrent(parseInput(html, '')); afterParse('서식 포함');
+  }
+});
+$('paste').addEventListener('input', () => {
+  const t = $('paste').value;
+  setCurrent(t.trim() ? parseInput('', t) : null); afterParse(current?.mode || '');
+});
+$('reqNo').addEventListener('input', render);
+// 발급자는 매번 같은 사람이 쓰므로 이 브라우저에 기억해 둔다 (저장 안 되는 환경이면 그냥 넘어감)
+try { $('issuer').value = localStorage.getItem('code-issue-issuer') || ''; } catch (e) {}
+$('issuer').addEventListener('input', () => { try { localStorage.setItem('code-issue-issuer', $('issuer').value); } catch (e) {} render(); });
+$('out').addEventListener('change', (e) => {
+  if (e.target.name === 'route') { sel.route = e.target.value; sel.routeSrc = 'manual'; }
+  if (e.target.name === 'target') {
+    sel.targets = TARGETS.filter(t => t === e.target.value ? e.target.checked : sel.targets.includes(t));
+    sel.targetSrc = 'manual';
+  }
+  render();
+});
+$('out').addEventListener('click', (e) => { if (e.target.id === 'copyBtn') doCopy(); });
+document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); doCopy(); } });
+$('resetBtn').addEventListener('click', () => {
+  $('paste').value = ''; $('reqNo').value = ''; setCurrent(null); afterParse(''); $('paste').focus();
+});
+render();
+$('paste').focus();
+</script>
+</body>
+</html>
