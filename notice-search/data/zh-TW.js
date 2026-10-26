@@ -7,6 +7,22 @@
 "posts": [
 {
 "lang": "zh-TW",
+"no": 136,
+"cat": "공지사항",
+"title": "DLC未知旅途Twich Drops活動通知",
+"utc": "2026-10-22T02:30:00Z",
+"body": "「赤血沙漠」DLC「未知旅途」將於下週正式推出。為慶祝這個重要時刻，Twich Drops活動亦將同步展開。\n在為期兩週的活動期間，玩家不僅能獲得多樣化的裝備，更能領取寵物、船隻裝飾等各項特別獎勵。\n![](https://s1.pearlcdn.com/cd/brand/board/2026/10/19/4d7f6f51fa320261019085431788.png)\n※ 第一週獎勵開放予所有持有「赤血沙漠：增強版」遊戲本體的玩家領取與使用。第二週獎勵則僅限持有「未知旅途」DLC的玩家方可使用。\n\n| **第一週** |\n| --- |\n| 10月 29日 22:00 ~ 11月 4日 23:59 UTC 10月 29日 23:00 ~ 11月 5日 00:59 CET 10月 29日 15:00 ~ 11月 5日 15:59 PT 10月 30日 07:00 ~ 11月 5日 08:59 KST |\n\n| **第二週** |\n| --- |\n| 11月 5日 00:00 ~ 11月 11日 23:59 UTC 11月 5日 01:00 ~ 11月 12日 00:59 CET 11月 4日 16:00 ~ 11月 11日 15:59 PT 11月 5日 09:00 ~ 11月 12日 08:59 KST |\n\n有關Drops獲取方式及詳細資訊，請點擊下方連結進行確認。\nTemplate BTN - Big Parchment Start [버튼 배경 이미지 ![](https://s1.pearlcdn.com/cd/brand/board/2026/10/19/b40c131989420261019083054784.png) 前往Twich Drops](https://crimsondesert.pearlabyss.com/) Template BTN - Big Parchment End\n(即將公開)"
+},
+{
+"lang": "zh-TW",
+"no": 137,
+"cat": "공지사항",
+"title": "DLC未知旅途內容介紹",
+"utc": "2026-10-20T23:00:00Z",
+"body": "各位灰鬃，大家好！\n現已公開預計於10月30日上線的「未知旅途」全新前瞻影片。透過這段影片，您可以提前領略即將在DLC中展開的全新冒險。\n觀看影片後，為了確保能順利體驗「未知旅途」的核心內容，請同時確認影片下方的說明文字，瞭解展開冒險前所需的準備工作。\n[![](https://s1.pearlcdn.com/cd/brand/board/2026/10/20/2ad4f80406e20261020122156201.jpg)](https://youtu.be/k9WnZqkAFis)\nTemplate Start\nTemplate End\n**內容介紹及前置條件**「未知旅途」的部分內容需要達成特定前置條件後方可體驗。詳情請參閱下方說明。\n全新故事\n「未知旅途」將追加克里夫、翁卡與德米安各自的全新故事。在完成主線劇情後，您可以透過「冒險日誌」選單查看新的任務。\n此外，在完成主線劇情「狼丘」後，還將解鎖以大洋為背景的全新任務。\n**大洋探險**在「未知旅途」中，克里夫、翁卡與德米安將乘風破浪，深入探索帕衛爾的海底世界。在深海之中，您不僅能發現遺跡遺蹟、寶箱和全新生物，甚至還能體驗新坐騎。\n雖然潛水無需額外準備，但由於潛水過程中會消耗呼吸槽，如果提前準備好潛水服等道具或裝備，將能更加從容、便捷地探索奇幻的海底世界。\n不僅如此。在「未知旅途」中，您還可以親手建造船隻，在帕衛爾遼闊的大洋上航行。在狼丘建立灰鬃營地後，將解鎖相關任務，完成這些任務即可開啟船隻製作功能。\n若您想親自建造船隻，則可以派遣同伴前往港口並執行船隻建造任務，也可以直接從船隻管理員初購買獲得。\n**戀愛與慶典**在「未知旅途」中，克里夫、翁卡與德米安能與特定人物建立特殊關係。透過與帕衛爾的居民互動並累積信任，可發展為戀人關係，甚至還能結為連理。\n這些建立的緣分也將為「灰鬃營地」注入全新的活力。當營地升級至一定等級後，交情深厚的朋友們會前來拜訪並共度時光，讓營地變得比以往任何時候都更加熱鬧且充滿生機。\n**升級版家園系統**在「未知旅途」中，您將體驗到全面升級的家園系統，並能親手建造屬於自己的房屋。\n在狼丘建立營地，並完成「旭日之地」灰鬃勢力任務中的「路克的委託」後，即可同時使用原有的家園系統以及升級後的全新家園系統。\n**灰鬃之城**在「未知旅途」中，您可以將三座特定的城堡納為專屬空間。在完成主線劇情或相關任務，並解放城堡所在的據點後，即可開啟獲得城堡封賞的相關任務。一旦擁有這些城堡，您便能使用特色家具與裝飾，隨心打造城堡的中庭及內部空間。\n**經營玩法**您可以租賃並經營分布在帕衛爾各地的各種設施，例如貝路亞的餐廳或賈爾坎戰車製造所的打鐵鋪。只要完成解放該區域的勢力任務並建立灰鬃營地，即可透過「地圖」選單利用相關設施。\n**試煉庭院 - 全新戰鬥內容**「未知旅途」中將加入全新的戰鬥內容。在「試煉之園」中，您將依次挑戰在帕伊威爾冒險旅途中曾在戰場上遭遇過的各個頭目。該內容將在完成所有主線任務後開啟，成功完成挑戰的玩家還將獲得專屬的特別獎勵。\nTemplate Start\n希望本次公開的介紹影片及相關說明，能幫助各位更好地迎接即將在「赤血沙漠強化版：未知旅途」中開啟的全新冒險。\n更多詳細資訊，我們將在上市當天透過更新筆記進行通知。\n期待在帕衛爾與各位相見！\nTemplate End\n\n### 未知旅途各地區發售時間\n\n| **歐洲** | **北美** | **亞洲** |\n| --- | --- | --- |\n| 2026年10月29日(星期四) 22:00 (UTC) 2026年10月29日(星期四) 23:00 (CET) | 2026年10月29日(星期四) 15:00 (PT) 2026年10月29日(星期四) 18:00 (ET) | 2026年10月30日(星期五) 07:00 (KST/JST) |\n\nTemplate BTN - Big Parchment End\nTemplate End\nTemplate BTN - Dark With Img Start [alt 수정 필요 ![](https://s1.pearlcdn.com/cd/brand/contents_cd/img/crimsondesert/sns_ps5.png) SEO에 노출될 텍스트 수정 필요 PS5](https://store.playstation.com/product/UP4162-PPSA25286_00-DLCPREORDERBUNDL)[![](https://s1.pearlcdn.com/cd/brand/contents_cd/img/crimsondesert/sns_xbox.png) SEO에 노출될 텍스트 수정 필요 XBOX SERIES X|S](https://www.microsoft.com/store/productid/9mtwfnkpplf1)[![](https://s1.pearlcdn.com/cd/brand/contents_cd/img/crimsondesert/sns_steam.png) SEO에 노출될 텍스트 수정 필요 STEAM](https://store.steampowered.com/app/5001840/)[![](https://static.pearlcdn.com/asset/brand/cd/contents_cd/img/crimsondesert/sns_epic.png) SEO에 노출될 텍스트 수정 필요 EPIC](https://store.epicgames.com/p/crimson-desert-crimson-desert-enhanced-charting-the-unknown-2202f5) Template BTN - Dark With Img End"
+},
+{
+"lang": "zh-TW",
 "no": 135,
 "cat": "공지사항",
 "title": "「赤血沙漠」入選「Golden Joystick Awards 2026」提名名單公告",
