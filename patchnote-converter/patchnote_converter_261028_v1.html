@@ -153,7 +153,28 @@
   }
   .dview.active, .dtab.active { background: #e8e8e8; color: #111; border-color: transparent; }
   .dtab.empty { opacity: 0.35; }
-  .dmedia-row { display:grid; grid-template-columns: 240px 1fr 72px; gap:12px; align-items:center; padding:8px 12px; border-bottom:0.5px solid #222; }
+  .dtab.edited::after { content: ' (수정)'; font-size: 10px; }
+  .dbox { border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 8px 12px; background: #131313; }
+  .dbox > summary { cursor: pointer; font-size: 12px; color: #ccc; font-weight: 600; padding: 2px 0; }
+  .dbox[open] > summary { margin-bottom: 8px; }
+  .dbox-sub { margin-left: 8px; font-weight: 400; color: #777; }
+  .dbox-note { font-size: 11px; color: #777; margin-bottom: 8px; }
+  .dth { text-align: left; color: #666; font-weight: 500; border-bottom: 0.5px solid #2a2a2a; }
+  .dopt { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #999; cursor: pointer; }
+  .dopt input[type=checkbox] { accent-color: #e8e8e8; width: 14px; height: 14px; }
+  .dsummary { font-size: 12px; color: #aaa; margin-bottom: 12px; padding: 8px 12px; border-left: 2px solid #3a8a9e; background: #12191d; border-radius: 0 6px 6px 0; }
+  .dsummary b { color: #e8e8e8; font-weight: 600; }
+  .dsummary .warn { color: #f0c060; }
+  .dsticky { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 0; background: #0f0f0f; border-bottom: 0.5px solid #2a2a2a; }
+  .dhint { font-size: 12px; color: #666; }
+  .dhint.on { color: #7ab8f5; }
+  .dbanner { font-size: 12px; color: #d8f0f6; background: #17323b; border: 0.5px solid #3a8a9e; border-radius: 6px; padding: 7px 12px; margin-bottom: 8px; }
+  .dtool { padding: 5px 12px; font-size: 12px; border-radius: 6px; border: 0.5px solid #3a5a72; background: #14222d; color: #9fd0e6; }
+  .dtool:hover { background: #1c3040; }
+  .dtool.active { background: #3a8a9e; color: #fff; border-color: transparent; }
+  .dsep { width: 1px; height: 18px; background: #333; margin: 0 2px; }
+  .dmedia-del { margin-left: 8px; padding: 1px 8px; font-size: 11px; border-radius: 6px; border: 0.5px solid #5a3a3a; background: #2a1616; color: #e8a0a0; }
+  .dmedia-row { display:grid; grid-template-columns: 320px 1fr 72px; gap:12px; align-items:center; padding:6px 12px; border-bottom:0.5px solid #222; }
   .dmedia-row:last-child { border-bottom:none; }
   .dmedia-label { font-size:12px; color:#ccc; line-height:1.5; }
   .dmedia-src { display:inline-block; margin-left:6px; padding:0 6px; border-radius:8px; font-size:10px; color:#888; border:0.5px solid #444; }
@@ -346,78 +367,108 @@
 
 <!-- DLC 디자인 변환 -->
 <div class="mode-panel" id="mode-design">
+  <div class="sub-tabs" style="display:flex;gap:8px;margin-bottom:18px;">
+    <button class="sub-tab-btn active" id="design-sub-multi-btn" onclick="switchDesignSub('multi')" style="padding:6px 18px;border-radius:20px;border:1px solid #444;background:#1a1a1a;color:#fff;cursor:pointer;font-size:13px;">다국어 일괄 변환</button>
+    <button class="sub-tab-btn" id="design-sub-single-btn" onclick="switchDesignSub('single')" style="padding:6px 18px;border-radius:20px;border:1px solid #333;background:transparent;color:#888;cursor:pointer;font-size:13px;">단일 언어 변환</button>
+  </div>
   <p style="font-size:12px;color:#aaa;font-weight:600;margin-bottom:12px;line-height:1.7;">
     DLC 디자인 — 같은 엑셀 시트를 디자인 공지(웹어드민)와 스팀 형식으로 함께 변환합니다.<br>
-    <span style="font-weight:400;color:#777;">기존 부호(★□◎◆◇-&gt;▶▷)는 그대로 쓰고, 아래 이름을 A열에 적으면 디자인 블록이 됩니다(영문 부호도 됨). 이미지·영상·링크 주소는 변환 후 나오는 입력칸에 넣습니다.</span>
+    <span style="font-weight:400;color:#777;">기존 부호(★□◎◆◇-&gt;▶▷)는 그대로 쓰고, A열에 아래 이름을 적으면 디자인 블록이 됩니다. 이미지·영상·링크 주소는 변환 후 입력칸에 넣습니다.</span>
   </p>
-  <table style="margin-bottom:16px;border-collapse:collapse;font-size:12px;">
-    <thead>
-      <tr>
-        <th class="ddesc" style="text-align:left;color:#666;font-weight:500;border-bottom:0.5px solid #2a2a2a;">A열에 적는 이름</th>
-        <th class="ddesc" style="text-align:left;color:#666;font-weight:500;border-bottom:0.5px solid #2a2a2a;">B열부터 넣는 것</th>
-        <th class="ddesc" style="text-align:left;color:#666;font-weight:500;border-bottom:0.5px solid #2a2a2a;">나오는 모습</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td class="dname">공지제목 <span>SUBJECT</span></td><td class="dhow">공지 제목</td><td class="dhow">본문엔 안 나옴. 스팀 CSV 제목으로 사용</td></tr>
-      <tr><td class="dname">큰제목 <span>HERO</span></td><td class="dhow">맨 위 큰 문구 (예: 미지, 그 너머로)</td><td class="dhow">영문 라벨 + 큰 남색 제목</td></tr>
-      <tr><td class="dname">소개문 <span>TXT</span></td><td class="dhow">소개 문단 한 개</td><td class="dhow">가운데 정렬 문단</td></tr>
-      <tr><td class="dname">이미지 <span>IMG</span></td><td class="dhow">비워 둠</td><td class="dhow">이미지 (주소는 아래 입력칸)</td></tr>
-      <tr><td class="dname">영상 <span>VID</span></td><td class="dhow">비워 둠</td><td class="dhow">자동재생 반복 영상 (주소는 아래 입력칸)</td></tr>
-      <tr><td class="dname">챕터 <span>CH</span></td><td class="dhow">챕터 제목 (예: 바다를 향해)</td><td class="dhow">CHAPTER 01 + 제목, 목차에 자동 추가</td></tr>
-      <tr><td class="dname">캐릭터 <span>CHAR</span></td><td class="dhow">캐릭터 이름. 행 개수만큼 칸이 나뉨</td><td class="dhow">사선으로 나뉜 캐릭터 칸 (이미지는 아래 입력칸)</td></tr>
-      <tr><td class="dname">태그 <span>TAG</span></td><td class="dhow">항목 묶음 이름 (예: 클리프, 항해)</td><td class="dhow">금테 이름표. 아래 ◆ 항목을 박스로 묶음</td></tr>
-      <tr><td class="dname">버튼 <span>BTN</span></td><td class="dhow">버튼 문구</td><td class="dhow">양피지 버튼 (링크는 아래 입력칸)</td></tr>
-      <tr><td class="dname">섹션 <span>SEC</span></td><td class="dhow">섹션 제목 (예: [공통] 모든 회색갈기에게)</td><td class="dhow">제목 + 구분선, 목차에 자동 추가. 챕터를 끝냄</td></tr>
-    </tbody>
-  </table>
-  <div class="multi-input-wrap">
-    <div class="panel-label">엑셀 붙여넣기</div>
-    <textarea id="design-input" placeholder="엑셀에서 부호열부터 마지막 언어열까지 전체 선택 후 붙여넣기"></textarea>
+  <details class="dbox" id="design-guide" style="margin-bottom:16px;">
+    <summary>A열에 적는 이름 <span class="dbox-sub">공지제목 · 큰제목 · 소개문 · 이미지 · 영상 · 챕터 · 캐릭터 · 태그 · 버튼 · 섹션</span></summary>
+    <table style="border-collapse:collapse;font-size:12px;margin:4px 0 6px;">
+      <thead>
+        <tr>
+          <th class="ddesc dth">A열에 적는 이름</th>
+          <th class="ddesc dth">B열부터 넣는 것</th>
+          <th class="ddesc dth">나오는 모습</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="dname">공지제목 <span>SUBJECT</span></td><td class="dhow">공지 제목</td><td class="dhow">본문엔 안 나옴. 스팀 CSV 제목으로 사용</td></tr>
+        <tr><td class="dname">큰제목 <span>HERO</span></td><td class="dhow">맨 위 큰 문구 (예: 미지, 그 너머로)</td><td class="dhow">영문 라벨 + 큰 남색 제목</td></tr>
+        <tr><td class="dname">소개문 <span>TXT</span></td><td class="dhow">소개 문단 한 개</td><td class="dhow">가운데 정렬 문단</td></tr>
+        <tr><td class="dname">이미지 <span>IMG</span></td><td class="dhow">비워 둠</td><td class="dhow">이미지 (주소는 변환 후 입력칸)</td></tr>
+        <tr><td class="dname">영상 <span>VID</span></td><td class="dhow">비워 둠</td><td class="dhow">자동재생 반복 영상 (주소는 변환 후 입력칸)</td></tr>
+        <tr><td class="dname">챕터 <span>CH</span></td><td class="dhow">챕터 제목 (예: 바다를 향해)</td><td class="dhow">CHAPTER 01 + 제목, 목차에 자동 추가</td></tr>
+        <tr><td class="dname">캐릭터 <span>CHAR</span></td><td class="dhow">캐릭터 이름. 행 개수만큼 칸이 나뉨</td><td class="dhow">사선으로 나뉜 캐릭터 칸 (이미지는 변환 후 입력칸)</td></tr>
+        <tr><td class="dname">태그 <span>TAG</span></td><td class="dhow">항목 묶음 이름 (예: 클리프, 항해)</td><td class="dhow">금테 이름표. 아래 ◆ 항목을 박스로 묶음</td></tr>
+        <tr><td class="dname">버튼 <span>BTN</span></td><td class="dhow">버튼 문구</td><td class="dhow">양피지 버튼 (링크는 변환 후 입력칸)</td></tr>
+        <tr><td class="dname">섹션 <span>SEC</span></td><td class="dhow">섹션 제목 (예: [공통] 모든 회색갈기에게)</td><td class="dhow">제목 + 구분선, 목차에 자동 추가. 챕터를 끝냄</td></tr>
+      </tbody>
+    </table>
+  </details>
+  <div class="multi-input-wrap" id="design-multi-wrap">
+    <div class="panel-label">엑셀 붙여넣기 (A열 ~ P열, 제목 행 제외)</div>
+    <textarea id="design-input" placeholder="엑셀에서 부호열부터 마지막 언어열까지 전체 선택 후 붙여넣기 · Ctrl+Enter로 변환"></textarea>
   </div>
-  <div class="actions" style="margin-bottom:8px;">
-    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888;cursor:pointer;">
-      <input type="checkbox" id="design-footer" checked style="accent-color:#e8e8e8;width:14px;height:14px;"> 하단 템플릿 추가
-    </label>
-    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888;cursor:pointer;">
-      <input type="checkbox" id="design-toc" checked style="accent-color:#e8e8e8;width:14px;height:14px;"> 목차 추가
-    </label>
-    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888;">
-      큰제목 위 영문 라벨
-      <input type="text" id="design-hero-label" value="CHARTING THE UNKNOWN" style="background:#1a1a1a;border:1px solid #444;border-radius:6px;padding:4px 10px;color:#fff;font-size:12px;width:200px;">
-    </label>
+  <div class="multi-input-wrap" id="design-single-wrap" style="display:none;">
+    <div class="panel-label" style="display:flex;align-items:center;gap:10px;">
+      <span>A열(부호) + 언어열 붙여넣기</span>
+      <label class="dopt" style="font-weight:400;">언어
+        <select id="design-single-lang" style="background:#1a1a1a;border:1px solid #444;border-radius:6px;padding:3px 8px;color:#fff;font-size:12px;"></select>
+      </label>
+      <span style="font-weight:400;color:#777;">하단 템플릿·스팀 형식이 이 언어로 나옵니다. 탭 없이 「챕터 바다를 향해」「◆ 항목」처럼 한 줄로 써도 됩니다.</span>
+    </div>
+    <textarea id="design-input-single" placeholder="공지제목&#9;붉은사막 「미지의 여정」 업데이트 안내&#10;큰제목&#9;미지, 그 너머로&#10;소개문&#9;파이웰의 대지와 바다를 …&#10;이미지&#10;챕터&#9;바다를 향해&#10;태그&#9;항해&#10;◆&#9;항목 …&#10;· Ctrl+Enter로 변환"></textarea>
   </div>
   <div class="actions">
     <button class="btn-primary" onclick="convertDesign()">변환</button>
     <button onclick="clearDesign()">초기화</button>
+    <span class="dsep" style="margin:0 6px;"></span>
+    <label class="dopt"><input type="checkbox" id="design-footer" checked onchange="applyDesignOptions()"> 하단 템플릿</label>
+    <label class="dopt"><input type="checkbox" id="design-toc" checked onchange="applyDesignOptions()"> 목차</label>
+    <label class="dopt">큰제목 위 영문 라벨
+      <input type="text" id="design-hero-label" value="CHARTING THE UNKNOWN" oninput="applyDesignOptions(true)" style="background:#1a1a1a;border:1px solid #444;border-radius:6px;padding:4px 10px;color:#fff;font-size:12px;width:200px;">
+    </label>
   </div>
 
   <div id="design-result" style="display:none;margin-top:24px;">
-    <div id="design-media-wrap" style="display:none;margin-bottom:20px;">
-      <div class="panel-label">이미지 · 영상 · 링크 주소 (입력하면 모든 언어에 바로 반영)</div>
-      <div id="design-media" style="border:0.5px solid #2a2a2a;border-radius:10px;overflow:hidden;"></div>
+    <div id="design-summary" class="dsummary"></div>
+
+    <details class="dbox" id="design-media-wrap" style="display:none;margin-bottom:14px;">
+      <summary>이미지 · 영상 · 링크 주소 <span class="dbox-sub" id="design-media-count"></span></summary>
+      <div class="dbox-note">입력하면 모든 언어에 바로 반영됩니다. 비워 두면 기본값(있는 경우)이 들어갑니다.</div>
+      <div id="design-media" style="border:0.5px solid #2a2a2a;border-radius:8px;overflow:hidden;"></div>
+    </details>
+
+    <div class="dsticky">
+      <div style="display:flex;gap:6px;">
+        <button class="dview active" data-view="admin" onclick="selectDesignView('admin')">웹어드민 (디자인)</button>
+        <button class="dview" data-view="steam" onclick="selectDesignView('steam')">스팀</button>
+      </div>
+      <span class="dsep"></span>
+      <div id="design-lang-tabs" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="copy-msg" id="copy-msg-design">복사되었습니다!</span>
+        <button id="design-csv-btn" onclick="exportDesignSteamCSV()" style="display:none;">스팀 CSV 추출</button>
+        <button class="btn-primary" onclick="copyDesignOutput()">코드 복사</button>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button class="dview active" data-view="admin" onclick="selectDesignView('admin')">웹어드민 (디자인)</button>
-      <button class="dview" data-view="steam" onclick="selectDesignView('steam')">스팀</button>
-    </div>
-    <div id="design-lang-tabs" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;"></div>
-    <textarea id="design-output" readonly style="height:300px;"></textarea>
-    <div class="lang-copy-row">
-      <button onclick="copyDesignOutput()">코드 복사</button>
-      <span class="copy-msg" id="copy-msg-design">복사되었습니다!</span>
-      <button id="design-csv-btn" onclick="exportDesignSteamCSV()" style="display:none;">스팀 CSV 추출</button>
-    </div>
-    <div id="design-preview-wrap" style="margin-top:18px;">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-        <span class="panel-label" style="margin:0;">미리보기 (공홈 CSS 적용)</span>
+
+    <div id="design-preview-wrap" style="margin-top:12px;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
         <button class="dview active" data-width="pc" onclick="setDesignPreviewWidth('pc')">PC</button>
         <button class="dview" data-width="m" onclick="setDesignPreviewWidth('m')">모바일</button>
+        <span class="dsep"></span>
+        <button class="dtool" onclick="insertDesignMedia('IMG')" title="미리보기에서 위치를 클릭한 뒤 누르면 그 줄 아래에 모든 언어 공통으로 들어갑니다">＋ 이미지 넣기</button>
+        <button class="dtool" onclick="insertDesignMedia('VID')" title="미리보기에서 위치를 클릭한 뒤 누르면 그 줄 아래에 모든 언어 공통으로 들어갑니다">＋ 영상 넣기</button>
+        <span class="dsep"></span>
+        <button class="dtool" id="design-edit-btn" onclick="toggleDesignEdit()" title="미리보기 글자를 직접 고칩니다. 지금 보고 있는 언어의 웹어드민 코드에만 반영됩니다">글자 수정 켜기</button>
+        <button class="dtool" id="design-revert-btn" onclick="revertDesignEdit()" style="display:none;">이 언어 수정 되돌리기</button>
+        <span id="design-insert-hint" class="dhint">미리보기를 클릭하면 이미지·영상이 들어갈 위치가 여기 표시됩니다</span>
       </div>
+      <div id="design-edit-banner" class="dbanner" style="display:none;"></div>
       <div style="background:#0c0c0c;border:0.5px solid #2a2a2a;border-radius:10px;overflow:hidden;">
-        <iframe id="design-preview" style="display:block;width:100%;height:820px;border:0;margin:0 auto;background:#0c0c0c;"></iframe>
+        <iframe id="design-preview" onload="window.onDesignPreviewLoad && onDesignPreviewLoad()" style="display:block;width:100%;height:78vh;min-height:560px;border:0;margin:0 auto;background:#0c0c0c;"></iframe>
       </div>
     </div>
+
+    <details class="dbox" id="design-code-box" style="margin-top:14px;">
+      <summary>코드 보기 <span class="dbox-sub" id="design-code-label"></span></summary>
+      <textarea id="design-output" readonly style="height:300px;margin-top:6px;"></textarea>
+    </details>
   </div>
 </div>
 
@@ -1439,8 +1490,17 @@ const DESIGN_DEFAULTS = {
 };
 const DESIGN_MEDIA_STORE = 'pnc_design_media';
 
-let designRows = [];
+const DESIGN_INSERT_STORE = 'pnc_design_inserts';
+
+let designBaseRows = [];     // 시트에서 읽은 행
+let designRows = [];         // 시트 행 + 미리보기에서 넣은 이미지·영상 행
 let designOpts = {};
+let designInserts = [];      // 미리보기에서 넣은 것 [{ id, sym: 'IMG'|'VID', after: 행 서명 | '^END' }] — 전 언어 공통
+try { designInserts = JSON.parse(localStorage.getItem(DESIGN_INSERT_STORE) || '[]') || []; } catch (e) { designInserts = []; }
+let designEdits = {};        // 미리보기에서 직접 고친 글자 { lang: 위치 표시 포함 HTML } — 해당 언어만
+let designEditMode = false;
+let designLastPoint = null;  // 미리보기에서 마지막으로 클릭한 노드
+let designPreviewScroll = 0;
 let designMedia = {};        // 화면에서 입력한 주소 { slotKey: url }
 try { designMedia = JSON.parse(localStorage.getItem(DESIGN_MEDIA_STORE) || '{}') || {}; } catch (e) { designMedia = {}; }
 
@@ -1510,7 +1570,8 @@ function wrapOrphanLi(html) {
   const out = [];
   let depth = 0, open = false;
   html.split('\n').forEach(ln => {
-    const isLi = /^<li>[\s\S]*<\/li>$/.test(ln) && !/<\/?ul\b/i.test(ln);
+    const core = ln.replace(/<!--r:\d+-->$/, '');   // 미리보기 위치 표시는 판단에서 뺀다
+    const isLi = /^<li>[\s\S]*<\/li>$/.test(core) && !/<\/?ul\b/i.test(core);
     if (depth === 0 && isLi) {
       if (!open) { out.push('<ul>'); open = true; }
       out.push(ln);
@@ -1691,6 +1752,16 @@ function renderDesignAdmin(rows, li, opts) {
   const out = [];
   let inChapter = false, boxOpen = false, boxHasContent = false, tocDone = false;
   let chapterNo = 0, seenChapter = false;
+  // 미리보기에서 클릭한 위치가 몇 번째 행 블록인지 알기 위한 표시. 복사용 코드에서는 stripMarkers로 지운다.
+  const mark = idx => out.push(`<!--r:${idx}-->`);
+  // 기존 부호 행은 줄마다 표시를 붙인다. convertLines는 "부호 없고 빈 행"만 건너뛰고 나머지는 한 행에 한 줄을 낸다.
+  const standardWithMarks = (part, start) => {
+    const html = convertLines(part.map(x => x.sym), part.map(textOf), false);
+    if (!html.trim()) return '';
+    const idxs = [];
+    part.forEach((x, n) => { if (x.sym || textOf(x)) idxs.push(start + n); });
+    return html.split('\n').map((ln, n) => idxs[n] !== undefined ? ln + `<!--r:${idxs[n]}-->` : ln).join('\n');
+  };
   const openBox = () => { if (!boxOpen) { out.push(designBoxOpen()); boxOpen = true; boxHasContent = false; } };
   const closeBox = () => { if (boxOpen) { out.push('</div>'); boxOpen = false; } };
   const maybeToc = () => {
@@ -1711,15 +1782,14 @@ function renderDesignAdmin(rows, li, opts) {
         // 챕터 안: ★□◎ 제목이 나오기 전까지는 박스 안 리스트
         while (k < run.length && !['★', '□', '◎'].includes(run[k].sym)) k++;
         if (k > 0) {
-          const html = convertLines(run.slice(0, k).map(x => x.sym), run.slice(0, k).map(textOf), false);
+          const html = standardWithMarks(run.slice(0, k), i);
           if (html.trim()) { openBox(); out.push(themeStandard(html)); boxHasContent = true; }
         }
         if (k < run.length) inChapter = false;
       }
       if (k < run.length) {
         closeBox();
-        const part = run.slice(k);
-        const html = convertLines(part.map(x => x.sym), part.map(textOf), false);
+        const html = standardWithMarks(run.slice(k), i + k);
         if (html.trim()) out.push(themeStandard(html));
       }
       i = j;
@@ -1763,6 +1833,7 @@ function renderDesignAdmin(rows, li, opts) {
           i++;
         }
         out.push(designChars(chars));
+        mark(i - 1);
         continue;
       }
       case 'TAG':
@@ -1780,6 +1851,7 @@ function renderDesignAdmin(rows, li, opts) {
         out.push(designSec(r.id, text));
         break;
     }
+    if (r.sym !== 'SUBJECT') mark(i);
     i++;
   }
   closeBox();
@@ -1838,13 +1910,69 @@ function renderDesignSteam(rows, li, opts) {
   return out.join('') + footer;
 }
 
+// ── DLC 디자인 단일 언어 ──
+let designInputMode = 'multi';   // 'multi' | 'single'
+let designSingleLi = null;       // 단일 언어 변환 결과의 LANGS 인덱스 (다국어면 null)
+
+function switchDesignSub(mode) {
+  designInputMode = mode;
+  document.getElementById('design-multi-wrap').style.display = mode === 'multi' ? '' : 'none';
+  document.getElementById('design-single-wrap').style.display = mode === 'single' ? '' : 'none';
+  document.getElementById('design-sub-multi-btn').classList.toggle('active', mode === 'multi');
+  document.getElementById('design-sub-single-btn').classList.toggle('active', mode === 'single');
+  document.querySelectorAll('#mode-design .sub-tab-btn').forEach(b => {
+    b.style.background = b.classList.contains('active') ? '#1a1a1a' : 'transparent';
+    b.style.color = b.classList.contains('active') ? '#fff' : '#888';
+    b.style.borderColor = b.classList.contains('active') ? '#444' : '#333';
+  });
+}
+
+(function () {
+  const sel = document.getElementById('design-single-lang');
+  sel.innerHTML = LANGS.map(l => `<option value="${l}">${l}</option>`).join('');
+})();
+
+// 단일 언어 붙여넣기를 다국어 시트와 같은 행 모양으로 바꾼다.
+// 글자는 KR 칸(cols[1])과 선택 언어 칸 양쪽에 넣는다 — 주소칸 이름·행 서명·경고는 KR 칸을 읽기 때문.
+function parseDesignSingle(raw, li) {
+  const ci = li === 0 ? 1 : li + 2;
+  return raw.split('\n')
+    .filter(l => l.trim().length > 0)
+    .map(l => l.split('\t'))
+    .filter(c => (c[2] || '').trim() !== '삭제')
+    .map(c => {
+      let a = c[0] || '', text;
+      if (c.length >= 2) text = c[1].trim();
+      else {
+        // 탭 없이 한 줄: 「챕터 바다를 향해」, 「◆ 항목」, 「이미지」
+        const s = a.trim();
+        const m = s.match(/^(\S+)\s*([\s\S]*)$/);
+        const head = m ? m[1] : '';
+        if (isDesignSym(designSymbol(head))) { a = head; text = m[2].trim(); }
+        else {
+          const sym = getSymbol(s);
+          a = sym || '';
+          text = sym ? s.slice(sym.length).trim() : s;
+        }
+      }
+      const cols = [a, text];
+      cols[ci] = text;
+      for (let k = 0; k < cols.length; k++) if (cols[k] === undefined) cols[k] = '';
+      return { sym: designSymbol(a), cols };
+    });
+}
+
 function convertDesign(stage) {
-  const raw = document.getElementById('design-input').value;
+  const single = designInputMode === 'single';
+  const raw = document.getElementById(single ? 'design-input-single' : 'design-input').value;
   if (!raw.trim()) return;
   stage = stage || 0;
+  const singleLang = document.getElementById('design-single-lang').value;
+  const singleLi = Math.max(0, LANGS.indexOf(singleLang));
 
   if (stage < 1) {
     const multi = findMultilineCells(raw);
+    if (single) multi.forEach(item => { if (item.lang === 'KR') item.lang = singleLang; });
     if (multi.length > 0) {
       document.getElementById('modal-title').textContent = '⚠️ 줄바꿈이 포함된 셀이 감지되었습니다.';
       document.getElementById('modal-subtitle').textContent = '아래 텍스트를 마우스로 선택하여 복사한 후 엑셀에서 찾아주세요.';
@@ -1860,7 +1988,7 @@ function convertDesign(stage) {
     }
   }
 
-  const rows = raw.split('\n')
+  const rows = single ? parseDesignSingle(raw, singleLi) : raw.split('\n')
     .map(l => l.split('\t'))
     .filter(cols => cols.some(c => c.trim().length > 0))
     .filter(cols => (cols[2] || '').trim() !== '삭제')
@@ -1876,20 +2004,31 @@ function convertDesign(stage) {
     const warns = findDesignWarnings(rows);
     if (warns.length > 0) { showDesignWarnModal(warns, () => convertDesign(2)); return; }
   }
-  if (stage < 3) {
+  if (stage < 3 && !single) {
     const missing = detectMissingTranslations(raw);
     if (Object.keys(missing).length > 0) { showMissingModal(missing, () => convertDesign(3)); return; }
   }
 
-  designRows = rows;
+  if (!confirmDropDesignEdits()) return;
+  // 행 서명: 미리보기에서 넣은 이미지·영상이 시트를 다시 붙여넣어도 같은 자리에 붙도록
+  const sigN = {};
+  rows.forEach(r => {
+    const base = `${r.sym || (r.cols[0] || '').trim() || '-'}|${(r.cols[1] || '').trim()}`;
+    sigN[base] = (sigN[base] || 0) + 1;
+    r.sig = base + '|' + sigN[base];
+  });
+  designBaseRows = rows;
+  designSingleLi = single ? singleLi : null;
   designOpts = {
     footer: document.getElementById('design-footer').checked,
     toc: document.getElementById('design-toc').checked,
     heroLabel: document.getElementById('design-hero-label').value.trim(),
   };
+  applyDesignInserts();
   buildDesignSlots();
-  renderDesignMediaPanel();
+  renderDesignMediaPanel(true);
   rerenderDesign();
+  renderDesignSummary();
 
   const tabsEl = document.getElementById('design-lang-tabs');
   tabsEl.innerHTML = '';
@@ -1909,7 +2048,15 @@ function convertDesign(stage) {
 function buildDesignSlots() {
   let chapterKR = '', seenChapter = false, topImgUsed = false, chapterImgN = 0;
   const seen = {};
+  let prevReal = null;
   designRows.forEach(r => {
+    if (r.virtual) {
+      r.slotKey = r.sig;
+      r.slotLabel = `직접 넣은 ${r.sym === 'IMG' ? '이미지' : '영상'} · ${designRowLabel(prevReal)} 아래`;
+      setSlotUrl(r, '', r.sym === 'VID' ? DESIGN_DEFAULTS.vid : '');
+      return;
+    }
+    prevReal = r;
     if (r.sym === 'CH') { chapterKR = (r.cols[1] || '').trim(); seenChapter = true; return; }
     if (!DESIGN_URL_SYMS.includes(r.sym)) return;
     const kr = (r.cols[1] || '').trim();
@@ -1930,27 +2077,41 @@ function buildDesignSlots() {
     else if (r.sym === 'CHAR') { r.slotLabel = `${ctx} · ${kr || '캐릭터'} 칸 이미지`; }
     else if (r.sym === 'BTN') { def = DESIGN_DEFAULTS.btn; r.slotLabel = `버튼 「${kr}」 링크`; }
 
-    const sheet = (r.cols[2] || '').trim();
-    r.slotDefault = def;
-    r.slotSheet = sheet;
-    const typed = designMedia[r.slotKey];
-    if (typed !== undefined && typed !== '') { r.url = typed; r.slotSrc = '입력'; }
-    else if (sheet) { r.url = sheet; r.slotSrc = 'C열'; }
-    else if (def) { r.url = def; r.slotSrc = '기본값'; }
-    else { r.url = ''; r.slotSrc = '비어 있음'; }
+    setSlotUrl(r, (r.cols[2] || '').trim(), def);
   });
 }
 
-function renderDesignMediaPanel() {
+// 주소 우선순위: 화면 입력값 > C열 > 기본값
+function setSlotUrl(r, sheet, def) {
+  r.slotSheet = sheet;
+  r.slotDefault = def;
+  const typed = designMedia[r.slotKey];
+  if (typed !== undefined && typed !== '') { r.url = typed; r.slotSrc = '입력'; }
+  else if (sheet) { r.url = sheet; r.slotSrc = 'C열'; }
+  else if (def) { r.url = def; r.slotSrc = '기본값'; }
+  else { r.url = ''; r.slotSrc = '비어 있음'; }
+}
+
+function designRowLabel(r) {
+  if (!r) return '맨 위';
+  const kr = (r.cols[1] || '').trim();
+  const name = DESIGN_NAME[r.sym] || r.sym || '텍스트';
+  return kr ? `${name} 「${kr.length > 16 ? kr.slice(0, 16) + '…' : kr}」` : name;
+}
+
+// autoOpen: 변환 직후에는 비어 있는 칸이 있을 때만 펼친다 (넣기·빼기 때는 사용자가 펼친 상태 유지)
+function renderDesignMediaPanel(autoOpen) {
   const slots = designRows.filter(r => r.slotKey);
   const wrap = document.getElementById('design-media-wrap');
   wrap.style.display = slots.length ? '' : 'none';
+  if (autoOpen) wrap.open = slots.some(r => !r.url);
+  updateDesignMediaCount();
   document.getElementById('design-media').innerHTML = slots.map(r => {
     const thumb = (r.sym === 'IMG' || r.sym === 'CHAR')
       ? `<img class="dmedia-thumb" src="${escAttr(r.url.replace(/\{lang\}/g, 'KR'))}" alt=""${r.url ? '' : ' style="visibility:hidden;"'}>`
       : `<span class="dmedia-thumb" style="display:inline-block;"></span>`;
     return `<div class="dmedia-row">
-      <div class="dmedia-label">${escAttr(r.slotLabel)}<span class="dmedia-src${r.url ? '' : ' miss'}">${r.slotSrc}</span></div>
+      <div class="dmedia-label">${escAttr(r.slotLabel)}<span class="dmedia-src${r.url ? '' : ' miss'}">${r.slotSrc}</span>${r.virtual ? `<button class="dmedia-del" onclick="removeDesignInsert('${r.insId}')">빼기</button>` : ''}</div>
       <input type="text" data-key="${escAttr(r.slotKey)}" value="${escAttr(r.url)}" placeholder="${escAttr(r.slotDefault || '주소 입력')}" oninput="onDesignMediaInput(this)">
       ${thumb}
     </div>`;
@@ -1959,6 +2120,11 @@ function renderDesignMediaPanel() {
 
 function onDesignMediaInput(el) {
   const key = el.dataset.key;
+  if (!confirmDropDesignEdits()) {
+    const r = designRows.find(x => x.slotKey === key);
+    el.value = r ? r.url : '';
+    return;
+  }
   const val = el.value.trim();
   designMedia[key] = val;
   try { localStorage.setItem(DESIGN_MEDIA_STORE, JSON.stringify(designMedia)); } catch (e) {}
@@ -1979,7 +2145,7 @@ function onDesignMediaInput(el) {
     }
   });
   clearTimeout(onDesignMediaInput._t);
-  onDesignMediaInput._t = setTimeout(() => { rerenderDesign(); renderDesignOutput(); }, 300);
+  onDesignMediaInput._t = setTimeout(() => { rerenderDesign(); updateDesignMediaCount(); renderDesignSummary(); renderDesignOutput(); }, 300);
 }
 
 function rerenderDesign() {
@@ -1990,10 +2156,13 @@ function rerenderDesign() {
   designResults = {};
   designLangs = [];
   for (let li = 0; li < langCount + 1; li++) {
+    if (designSingleLi !== null && li !== designSingleLi) continue;
     const lang = LANGS[li];
     const ci = li === 0 ? 1 : li + 2;
+    const adminMarked = renderDesignAdmin(rows, li, designOpts);
     designResults[lang] = {
-      admin: renderDesignAdmin(rows, li, designOpts),
+      adminMarked,                          // 미리보기용 (위치 표시 포함)
+      admin: stripMarkers(adminMarked),     // 복사용
       steam: renderDesignSteam(rows, li, designOpts),
       subject: subjectRow ? (subjectRow.cols[ci] || '').trim() : '',
       empty: rows.every(r => !(r.cols[ci] || '').trim()),
@@ -2017,10 +2186,70 @@ function selectDesignView(view) {
 function renderDesignOutput() {
   const res = designResults[designCurrentLang];
   if (!res) return;
-  document.getElementById('design-output').value = designView === 'admin' ? res.admin : res.steam;
-  document.getElementById('design-csv-btn').style.display = designView === 'steam' ? '' : 'none';
-  document.getElementById('design-preview-wrap').style.display = designView === 'admin' ? '' : 'none';
-  if (designView === 'admin') updateDesignPreview();
+  const edited = designEdits[designCurrentLang];
+  const isAdmin = designView === 'admin';
+  document.getElementById('design-output').value = isAdmin ? (edited ? stripMarkers(edited) : res.admin) : res.steam;
+  document.getElementById('design-code-label').textContent = `${designCurrentLang} · ${isAdmin ? '웹어드민' : '스팀'}${isAdmin && edited ? ' · 직접 수정됨' : ''}`;
+  // 스팀은 미리보기가 없으니 코드를 바로 보여준다
+  if (!isAdmin) document.getElementById('design-code-box').open = true;
+  document.getElementById('design-csv-btn').style.display = isAdmin ? 'none' : '';
+  document.getElementById('design-preview-wrap').style.display = isAdmin ? '' : 'none';
+  document.getElementById('design-revert-btn').style.display = edited ? '' : 'none';
+  updateDesignEditBanner();
+  if (isAdmin) updateDesignPreview();
+}
+
+function updateDesignMediaCount() {
+  const slots = designRows.filter(r => r.slotKey);
+  const empty = slots.filter(r => !r.url).length;
+  document.getElementById('design-media-count').innerHTML =
+    `${slots.length}칸` + (empty ? ` · <span style="color:#f0c060;">비어 있음 ${empty}칸</span>` : '');
+}
+
+function renderDesignSummary() {
+  const filled = designLangs.filter(l => !designResults[l].empty).length;
+  const n = s => designRows.filter(r => r.sym === s).length;
+  const charGroups = designRows.filter((r, i) => r.sym === 'CHAR' && (i === 0 || designRows[i - 1].sym !== 'CHAR')).length;
+  const inserts = designRows.filter(r => r.virtual).length;
+  const empty = designRows.filter(r => r.slotKey && !r.url).length;
+  const parts = [`<b>${filled}개 언어</b> 변환 완료`];
+  if (n('CH')) parts.push(`챕터 ${n('CH')}개`);
+  if (n('IMG')) parts.push(`이미지 ${n('IMG')}개`);
+  if (n('VID')) parts.push(`영상 ${n('VID')}개`);
+  if (charGroups) parts.push(`캐릭터 칸 ${charGroups}묶음`);
+  if (inserts) parts.push(`미리보기에서 넣은 것 ${inserts}개`);
+  if (!designRows.some(r => isDesignSym(r.sym))) parts.push('디자인 부호가 없어 기존 형식(색만 변경)으로 나왔습니다');
+  if (empty) parts.push(`<span class="warn">주소 비어 있음 ${empty}칸</span>`);
+  document.getElementById('design-summary').innerHTML = parts.join(' · ');
+}
+
+function updateDesignEditBanner() {
+  const banner = document.getElementById('design-edit-banner');
+  banner.style.display = designEditMode && designView === 'admin' ? '' : 'none';
+  banner.textContent = `글자 수정 중 — 미리보기 글자를 클릭해서 바로 고치세요. ${designCurrentLang} 웹어드민 코드에만 반영되고, 다른 언어와 스팀은 그대로입니다.`;
+}
+
+// 옵션(하단 템플릿·목차·영문 라벨)은 변환한 뒤에 바꿔도 바로 반영
+function applyDesignOptions(debounce) {
+  if (!designBaseRows.length) return;
+  clearTimeout(applyDesignOptions._t);
+  const run = () => {
+    if (!confirmDropDesignEdits()) {
+      document.getElementById('design-footer').checked = designOpts.footer;
+      document.getElementById('design-toc').checked = designOpts.toc;
+      document.getElementById('design-hero-label').value = designOpts.heroLabel;
+      return;
+    }
+    designOpts = {
+      footer: document.getElementById('design-footer').checked,
+      toc: document.getElementById('design-toc').checked,
+      heroLabel: document.getElementById('design-hero-label').value.trim(),
+    };
+    rerenderDesign();
+    renderDesignSummary();
+    renderDesignOutput();
+  };
+  if (debounce) applyDesignOptions._t = setTimeout(run, 400); else run();
 }
 
 // ── 미리보기 공통 (DLC 디자인·웹어드민 탭) ──
@@ -2051,7 +2280,191 @@ function setDesignPreviewWidth(w) {
 function updateDesignPreview() {
   const res = designResults[designCurrentLang];
   if (!res) return;
-  document.getElementById('design-preview').srcdoc = buildPreviewDoc(res.admin);
+  const f = document.getElementById('design-preview');
+  try { designPreviewScroll = f.contentWindow.scrollY || 0; } catch (e) { designPreviewScroll = 0; }
+  designLastPoint = null;
+  const hint = document.getElementById('design-insert-hint');
+  hint.textContent = '미리보기를 클릭하면 이미지·영상이 들어갈 위치가 여기 표시됩니다';
+  hint.classList.remove('on');
+  f.srcdoc = buildPreviewDoc(designEdits[designCurrentLang] || res.adminMarked);
+}
+
+function stripMarkers(html) {
+  return html.replace(/<!--r:\d+-->/g, '');
+}
+
+// ── 미리보기 편집: 이미지·영상 넣기(전 언어 공통) / 글자 직접 수정(해당 언어만) ──
+function onDesignPreviewLoad() {
+  const f = document.getElementById('design-preview');
+  const doc = f.contentDocument;
+  if (!doc || !doc.body) return;
+  if (designPreviewScroll) f.contentWindow.scrollTo(0, designPreviewScroll);
+  doc.addEventListener('mousedown', e => {
+    designLastPoint = e.target;
+    setTimeout(showDesignInsertHint, 0);
+  });
+  doc.addEventListener('keyup', () => setTimeout(showDesignInsertHint, 0));
+  const area = doc.querySelector('.contents_area');
+  if (!area) return;
+  if (designEditMode) {
+    area.contentEditable = 'true';
+    area.style.outline = '2px dashed #3a8a9e';
+    area.style.outlineOffset = '4px';
+    area.addEventListener('input', () => {
+      clearTimeout(onDesignPreviewLoad._t);
+      onDesignPreviewLoad._t = setTimeout(saveDesignEdit, 250);
+    });
+    // 붙여넣기는 글자만 (다른 곳 서식이 섞이지 않게)
+    area.addEventListener('paste', e => {
+      e.preventDefault();
+      doc.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
+    });
+  }
+}
+
+function saveDesignEdit() {
+  const doc = document.getElementById('design-preview').contentDocument;
+  const area = doc && doc.querySelector('.contents_area');
+  if (!area) return;
+  designEdits[designCurrentLang] = area.innerHTML;
+  document.getElementById('design-output').value = stripMarkers(area.innerHTML);
+  document.getElementById('design-revert-btn').style.display = '';
+  updateDesignEditedTabs();
+}
+
+function updateDesignEditedTabs() {
+  document.querySelectorAll('#design-lang-tabs .dtab').forEach(b => b.classList.toggle('edited', !!designEdits[b.dataset.dlang]));
+}
+
+function toggleDesignEdit() {
+  designEditMode = !designEditMode;
+  const btn = document.getElementById('design-edit-btn');
+  btn.textContent = designEditMode ? '글자 수정 끄기' : '글자 수정 켜기';
+  btn.classList.toggle('active', designEditMode);
+  updateDesignEditBanner();
+  updateDesignPreview();
+}
+
+function revertDesignEdit() {
+  if (!confirm(`${designCurrentLang}에서 직접 고친 글자를 모두 되돌릴까요?`)) return;
+  delete designEdits[designCurrentLang];
+  updateDesignEditedTabs();
+  renderDesignOutput();
+}
+
+// 이미지 바꾸기·넣기·빼기·다시 변환은 전 언어를 새로 만들므로, 직접 고친 글자가 있으면 먼저 묻는다.
+function confirmDropDesignEdits() {
+  const langs = Object.keys(designEdits);
+  if (!langs.length) return true;
+  if (!confirm(`직접 고친 글자가 있는 언어(${langs.join(', ')})가 있습니다.\n계속하면 이 언어들의 글자 수정이 사라집니다. 계속할까요?\n\n(이미지·영상을 먼저 정리하고, 글자 수정은 마지막에 하는 걸 권합니다)`)) return false;
+  designEdits = {};
+  updateDesignEditedTabs();
+  return true;
+}
+
+// 클릭한 위치 다음에 오는 위치 표시를 찾아 그 행 번호를 돌려준다. 하단 템플릿처럼 뒤에 표시가 없으면 -1(맨 끝).
+function findDesignInsertRow() {
+  const doc = document.getElementById('design-preview').contentDocument;
+  if (!doc || !doc.body) return null;
+  let node = null;
+  const sel = doc.getSelection();
+  if (sel && sel.rangeCount && sel.anchorNode && doc.body.contains(sel.anchorNode)) node = sel.anchorNode;
+  else if (designLastPoint && doc.body.contains(designLastPoint)) node = designLastPoint;
+  if (!node) return null;
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_COMMENT);
+  let c;
+  while ((c = walker.nextNode())) {
+    const m = c.nodeValue.match(/^r:(\d+)$/);
+    if (!m) continue;
+    if (node === c || (node.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING)) return snapDesignInsertRow(+m[1]);
+  }
+  return -1;
+}
+
+// ◆ 아래 ◇·-·> 하위 항목, ▶ 아래 ▷ 내용 사이에 끼면 목록이 깨지므로 그 묶음이 끝나는 행으로 옮긴다.
+function snapDesignInsertRow(at) {
+  if (at < 0) return at;
+  const lv = r => (r && !r.virtual) ? getLevel(r.sym) : 0;
+  const isSpoiler = r => r && !r.virtual && (r.sym === '▶' || r.sym === '▷');
+  let k = at;
+  while (k + 1 < designRows.length) {
+    const cur = designRows[k], nx = designRows[k + 1];
+    if (lv(cur) >= 1 && lv(nx) > 1) { k++; continue; }
+    if (isSpoiler(cur) && !nx.virtual && nx.sym === '▷') { k++; continue; }
+    break;
+  }
+  return k;
+}
+
+function showDesignInsertHint() {
+  const at = findDesignInsertRow();
+  const hint = document.getElementById('design-insert-hint');
+  if (at === null) return;
+  hint.classList.add('on');
+  if (at < 0) { hint.textContent = '넣을 위치: 맨 끝 (하단 템플릿 위)'; return; }
+  let k = at;
+  let r = designRows[k];
+  // 묶음 끝으로 옮겨졌으면 묶음의 맨 위 항목(◆ 또는 ▶) 이름으로 보여준다
+  if (r && !r.virtual && (getLevel(r.sym) > 1 || r.sym === '▷')) {
+    while (k > 0 && designRows[k] && !designRows[k].virtual && !(getLevel(designRows[k].sym) === 1 || designRows[k].sym === '▶')) k--;
+    r = designRows[k];
+    hint.textContent = `넣을 위치: ${designRowLabel(r)} 묶음 아래`;
+    return;
+  }
+  // 직접 넣은 행이면 그 앞의 시트 행으로 표시
+  while (r && r.virtual && k > 0) r = designRows[--k];
+  hint.textContent = `넣을 위치: ${designRowLabel(r)} 아래`;
+}
+
+function insertDesignMedia(sym) {
+  if (!designRows.length) return;
+  const at = findDesignInsertRow();
+  if (at === null) { alert('미리보기에서 넣을 위치를 먼저 클릭해 주세요.\n클릭한 부분 바로 아래에 들어갑니다.'); return; }
+  const label = sym === 'IMG' ? '이미지' : '영상';
+  const input = prompt(`${label} 주소를 넣어 주세요. (모든 언어에 같은 자리로 들어가고, 나중에 위 입력칸에서 바꿀 수 있습니다)`, sym === 'VID' ? DESIGN_DEFAULTS.vid : '');
+  if (input === null || !input.trim()) return;
+  if (!confirmDropDesignEdits()) return;
+  const id = 'i' + Date.now().toString(36);
+  designInserts.push({ id, sym, after: at < 0 ? '^END' : designRows[at].sig });
+  designMedia['INS|' + id] = input.trim();
+  saveDesignInserts();
+  refreshDesignAll();
+}
+
+function removeDesignInsert(id) {
+  if (!confirmDropDesignEdits()) return;
+  designInserts = designInserts.filter(x => x.id !== id);
+  delete designMedia['INS|' + id];
+  saveDesignInserts();
+  refreshDesignAll();
+}
+
+function saveDesignInserts() {
+  try {
+    localStorage.setItem(DESIGN_INSERT_STORE, JSON.stringify(designInserts));
+    localStorage.setItem(DESIGN_MEDIA_STORE, JSON.stringify(designMedia));
+  } catch (e) {}
+}
+
+// 시트 행 사이에 직접 넣은 행을 끼운다. 넣은 순서대로 처리하므로 "직접 넣은 것 아래에 또 넣기"도 된다.
+function applyDesignInserts() {
+  const rows = designBaseRows.slice();
+  designInserts.forEach(ins => {
+    const v = { sym: ins.sym, cols: [], virtual: true, insId: ins.id, sig: 'INS|' + ins.id };
+    if (ins.after === '^END') { rows.push(v); return; }
+    const idx = rows.findIndex(r => r.sig === ins.after);
+    if (idx >= 0) rows.splice(idx + 1, 0, v);
+  });
+  designRows = rows;
+}
+
+function refreshDesignAll() {
+  applyDesignInserts();
+  buildDesignSlots();
+  renderDesignMediaPanel();
+  rerenderDesign();
+  renderDesignSummary();
+  renderDesignOutput();
 }
 
 // ── 웹어드민 탭 미리보기 ──
@@ -2080,6 +2493,7 @@ function copyDesignOutput() {
   if (!out) return;
   navigator.clipboard.writeText(out).then(() => {
     const msg = document.getElementById('copy-msg-design');
+    msg.textContent = `${designCurrentLang} ${designView === 'admin' ? '웹어드민' : '스팀'} 코드를 복사했습니다`;
     msg.classList.add('show');
     setTimeout(() => msg.classList.remove('show'), 2000);
   });
@@ -2107,14 +2521,27 @@ function exportDesignSteamCSV() {
   URL.revokeObjectURL(url);
 }
 
+// 엑셀 붙여넣기 칸에서 Ctrl+Enter로 변환
+['design-input', 'design-input-single'].forEach(id => document.getElementById(id).addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); convertDesign(); }
+}));
+
 function clearDesign() {
-  document.getElementById('design-input').value = '';
+  document.getElementById(designInputMode === 'single' ? 'design-input-single' : 'design-input').value = '';
+  designSingleLi = null;
   document.getElementById('design-output').value = '';
   document.getElementById('design-preview').srcdoc = '';
   document.getElementById('design-result').style.display = 'none';
   designResults = {};
   designLangs = [];
   designRows = [];
+  designBaseRows = [];
+  designInserts = [];
+  designEdits = {};
+  designEditMode = false;
+  document.getElementById('design-edit-btn').textContent = '글자 수정 켜기';
+  document.getElementById('design-edit-btn').classList.remove('active');
+  saveDesignInserts();
 }
 </script>
 </body>
