@@ -338,6 +338,10 @@
   </div>
 
   <div class="lang-tabs-wrap" id="lang-tabs-wrap" style="display:none;">
+    <div class="lang-copy-row" style="margin:0 0 12px;">
+      <button class="btn-primary" onclick="exportMultiTxt()">전체 언어 TXT 추출</button>
+      <span class="copy-msg" id="export-msg-multi"></span>
+    </div>
     <div class="lang-tabs" id="lang-tabs"></div>
     <div id="lang-outputs"></div>
   </div>
@@ -1251,6 +1255,52 @@ function copyLang(lang) {
     msg.classList.add('show');
     setTimeout(() => msg.classList.remove('show'), 2000);
   });
+}
+
+// 변환된 전체 언어 코드를 TXT 하나로 저장 (Claude가 웹어드민에 언어별로 붙여넣을 때 참조용)
+// 각 언어 코드는 "===== BEGIN <언어> =====" / "===== END <언어> =====" 사이에 원문 그대로 들어간다.
+function exportMultiTxt() {
+  const pad = n => String(n).padStart(2, '0');
+  const now = new Date();
+  const ymd = String(now.getFullYear()).slice(2) + pad(now.getMonth() + 1) + pad(now.getDate());
+  const hms = pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+  // 화면의 '코드 복사' 버튼과 똑같은 값을 쓰도록 각 언어 textarea에서 읽는다.
+  const included = [], skipped = [];
+  const blocks = [];
+  LANGS.forEach(lang => {
+    const ta = document.querySelector('#lang-out-' + lang + ' textarea');
+    if (!ta) return;
+    if (!ta.value.trim()) { skipped.push(lang); return; }
+    included.push(lang);
+    blocks.push(`===== BEGIN ${lang} =====\n${ta.value}\n===== END ${lang} =====`);
+  });
+  if (included.length === 0) return;
+
+  const header = [
+    '# 패치노트 웹어드민 코드 (다국어 일괄 변환)',
+    `# 생성: ${stamp}`,
+    `# 포함 언어 (${included.length}): ${included.join(', ')}`,
+    `# 비어 있어 제외된 언어: ${skipped.length ? skipped.join(', ') : '없음'}`,
+    '# 각 언어 코드는 BEGIN 줄과 END 줄 "사이"의 내용 전체이며, BEGIN/END 줄 자체는 붙여넣지 않는다.',
+  ].join('\n');
+
+  const text = header + '\n\n' + blocks.join('\n\n') + '\n';
+  const filename = `patchnote_${ymd}_${hms}.txt`;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+
+  const msg = document.getElementById('export-msg-multi');
+  msg.textContent = `${filename} 저장됨 (${included.length}개 언어)`;
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 3000);
 }
 
 function clearMulti() {
