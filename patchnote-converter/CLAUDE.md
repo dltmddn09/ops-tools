@@ -13,6 +13,11 @@
 
 - 디자인 공지(웹어드민 꾸밈 HTML)·DLC 출시 패치노트 작업 기록은 상위 저장소 `DLC 패치노트 기획/진행_현황.md`에 있음. 작업본 `patchnote_converter_261119_v1.html`(261028_v1 + 웹어드민 다국어 '전체 언어 TXT 추출' 버튼)의 DLC 디자인 탭·웹어드민 미리보기는 그 작업용이며 미배포.
 
+## 디자인 (2026-11-20)
+
+- 배포본 `index.html`만 CD 공지 검색과 같은 애플 리퀴드 글래스 톤으로 바꿨다. 라이트 기본, 오른쪽 위 버튼으로 다크 전환(localStorage `patchnote-converter-theme`). 작업본 `patchnote_converter_261119_v1.html`은 예전 디자인 그대로라, 작업본을 `index.html`로 올릴 때 디자인이 되돌아가지 않게 배포본의 `<style>`·머리글·`toggleTheme()`을 옮길 것.
+- 변환 로직 JS는 건드리지 않고 `<style>`·머리글 마크업·맨 아래 `toggleTheme()` 스크립트만 바꿨다. `switchAdminSub`/`switchSteamSub`가 서브탭에 인라인 색을 넣는데, CSS에서 `!important`로 덮어쓴다. 서브탭 색을 바꾸려면 JS가 아니라 CSS를 고칠 것.
+
 ## 파일/배포 규칙
 
 - 작업 중 파일명: `patchnote_converter_YYMMDD_vN.html`
