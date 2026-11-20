@@ -203,12 +203,24 @@
   const pad = n => String(n).padStart(2, '0');
   const tr = () => T[state.lang] || T['en-US'];
 
+  // ---- 마지막 갱신 시각: 수집기가 매번 쓰는 data/meta.js. 캐시로 옛 시각이 보이지 않게 매번 새로 받는다
+  const metaReady = new Promise(resolve => {
+    const s = document.createElement('script');
+    s.src = `data/meta.js?t=${Date.now()}`;
+    s.onload = s.onerror = () => resolve();
+    document.head.appendChild(s);
+  });
+
   // ---- 언어별 데이터 파일을 처음 고를 때 불러온다
+  // 주소에 마지막 갱신 시각(?v=)을 붙인다. 갱신 뒤에는 브라우저 캐시(GitHub Pages max-age=600)에 남은
+  // 옛 파일 대신 새 파일을 받고, 갱신이 없으면 캐시를 그대로 쓴다. meta.js를 못 받으면 매번 새로 받는다
   const loaded = {};
   function load(loc) {
-    if (!loaded[loc]) loaded[loc] = new Promise(resolve => {
+    if (!loaded[loc]) loaded[loc] = metaReady.then(() => new Promise(resolve => {
+      const m = window.NOTICE_META;
+      const v = encodeURIComponent((m && m.checked) || Date.now());
       const s = document.createElement('script');
-      s.src = `data/${loc}.js`;
+      s.src = `data/${loc}.js?v=${v}`;
       s.onload = () => {
         const d = window.NOTICE_DATA && window.NOTICE_DATA[loc];
         if (d) d.posts.forEach(prep);
@@ -216,7 +228,7 @@
       };
       s.onerror = () => { delete loaded[loc]; resolve(null); };
       document.head.appendChild(s);
-    });
+    }));
     return loaded[loc];
   }
   let data = null;  // 지금 언어의 { lang, cats, posts }
@@ -261,17 +273,14 @@
       : (data === undefined ? '' : t.noData);
   }
 
-  // ---- 마지막 갱신 시각: 수집기가 매번 쓰는 data/meta.js. 캐시로 옛 시각이 보이지 않게 매번 새로 받는다
+  // ---- 마지막 갱신 시각 표시 (meta.js는 위 metaReady에서 불러온다)
   function checkedKst() {
     const m = window.NOTICE_META;
     if (!m || !m.checked) return '';
     const k = new Date(new Date(m.checked).getTime() + 9 * 3600 * 1000);
     return `${k.getUTCFullYear()}.${pad(k.getUTCMonth() + 1)}.${pad(k.getUTCDate())} ${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}`;
   }
-  const metaScript = document.createElement('script');
-  metaScript.src = `data/meta.js?t=${Date.now()}`;
-  metaScript.onload = () => applyLang();
-  document.head.appendChild(metaScript);
+  metaReady.then(() => applyLang());
 
   function plain(s) {
     return s.replace(/^#{2,3} /, '').replace(/^\s*(?:-|\d+\.) /, '')
